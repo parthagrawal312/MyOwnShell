@@ -5,6 +5,16 @@
 #include <string>
 using namespace std;
 
+vector<string> split_string(const string &s, char delimiter){
+    stringstream ss(s);
+    vector<string> return_vect;
+    string token;
+    while(getline(ss, token, delimiter)){
+      return_vect.push_back(token);
+    }
+    return return_vect;
+  }
+
 
 string get_path(string command){
   string path_env = getenv("PATH");
@@ -78,7 +88,7 @@ int main() {
     string input;
     getline(cin, input);
     
-    vector<string> userinput = split_sentence(input);
+    vector<string> userinput = split_string(input,:);
     if(userinput[0]=="exit"){
         return 0;
     }
@@ -94,7 +104,7 @@ int main() {
     }
     else{
       string path_string = getenv("PATH");
-      vector<std::string> path = split_string(path_string, ':');
+      vector<string> path = split_string(path_string, ':');
       string filepath;
       for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
