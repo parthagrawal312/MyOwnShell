@@ -59,10 +59,10 @@ void commandChecker(string s){
   else{
     string path = get_path(s);
     if(path.empty()){
-      cout<<input<<" not found\n";
+      cout<<s<<" not found\n";
     }
     else{
-      cout<<input<<" is "<<path<<endl;
+      cout<<s<<" is "<<path<<endl;
     }
   }
 }
