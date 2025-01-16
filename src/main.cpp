@@ -11,7 +11,11 @@ int main() {
     cout << "$ ";
     string input;
     getline(cin, input);
+    if(input== "exit 0")
+    {
+      return 0;
+    }
     cout<<input<<": command not found"<<endl;
   }
-  return 0;
+  
 }
