@@ -2,19 +2,7 @@
 #include <vector>
 using namespace std;
 
-int main() {
-  // Flush after every std::cout / std:cerr
-  cout << unitbuf;
-  cerr << unitbuf;
-
-  // Uncomment this block to pass the first stage
-  while(true){
-    cout << "$ ";
-    string input;
-    getline(cin, input);
-
-
-    vector<string> split_sentence(string sen) {
+vector<string> split_sentence(string input) {
       vector<string> userinput;
       string word = "";
       for (char c : input) {  // Iterate through each character in the user input sentence
@@ -30,8 +18,19 @@ int main() {
         userinput.emplace_back(word);
       } 
       return userinput;// Return the vector containing words
-    }
+}
 
+int main() {
+  // Flush after every std::cout / std:cerr
+  cout << unitbuf;
+  cerr << unitbuf;
+
+  // Uncomment this block to pass the first stage
+  while(true){
+    cout << "$ ";
+    string input;
+    getline(cin, input);
+    
     vector<string> userinput = split_sentence(input);
     switch(userinput[0]){
       case "exit":
