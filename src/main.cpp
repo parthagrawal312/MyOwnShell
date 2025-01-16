@@ -88,7 +88,7 @@ int main() {
     string input;
     getline(cin, input);
     
-    vector<string> userinput = split_string(input,:);
+    vector<string> userinput = split_sentence(input);
     if(userinput[0]=="exit"){
         return 0;
     }
@@ -117,7 +117,8 @@ int main() {
         else if(i == path.size() - 1){
            cout << userinput[0] << ": not found\n";
         }
-    
+      }
+    }
   }
   
 }
