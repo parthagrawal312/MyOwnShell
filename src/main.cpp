@@ -114,7 +114,7 @@ int main() {
       //  cout<<"filepath is : "<<filepath<<endl;
         ifstream file(filepath);
         if(file.good()){
-          string command = "exec " + path[i] + '/' + input;
+          string command =  input;  // "exec " + path[i] + '/' +
       //    cout<<"command is: "<<command<<endl;
           system(command.c_str());
           break;
