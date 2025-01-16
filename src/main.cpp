@@ -1,6 +1,28 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <filesystem>
+#include <string>
 using namespace std;
+
+
+string get_path(string command){
+  string path_env = getenv("PATH");
+  stringstream ss(path_env);
+  string path;
+   while(!ss.eof()){
+      getline(ss, path, ':');
+
+        string abs_path = path + '/' + command;
+
+        if(filesystem::exists(abs_path)){
+            return abs_path;
+        }
+    }
+    return "";  
+}
+
+
 
 vector<string> split_sentence(string input) {
       vector<string> userinput;
@@ -35,10 +57,14 @@ void commandChecker(string s){
     cout<<s<<" is a shell builtin"<<endl;
   }
   else{
-    cout<<s<<": not found"<<endl;
+    string path = get_path(input);
+    if(path.empty()){
+      cout<<input<<" not found\n";
+    }
+    else{
+      cout<<input<<" is "<<path<<endl;
+    }
   }
-
-
 }
 
 int main() {
