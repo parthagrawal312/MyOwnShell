@@ -6,7 +6,6 @@
 #include <fstream>
 using namespace std;
 
-namespace fs = std::filesystem;
 vector<string> split_string(const string &s, char delimiter){
     stringstream ss(s);
     vector<string> return_vect;
@@ -79,10 +78,7 @@ void commandChecker(string s){
   }
 }
 
-int main(int argc, char* argv[]) {
-    // Normalize argv[0] to contain only the filename
-    std::filesystem::path programPath(argv[0]); 
-    argv[0] = const_cast<char*>(programPath.filename().c_str());
+int main() {
   // Flush after every std::cout / std:cerr
   cout << unitbuf;
   cerr << unitbuf;
@@ -116,7 +112,7 @@ int main(int argc, char* argv[]) {
         ifstream file(filepath);
         if(file.good()){
           string command = "exec " + path[i] + '/' + input;
-          filesystem(command.c_str());
+          system(command.c_str());
           break;
         } 
         else if(i == path.size() - 1){
