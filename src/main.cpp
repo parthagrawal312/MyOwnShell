@@ -57,7 +57,7 @@ void commandChecker(string s){
     cout<<s<<" is a shell builtin"<<endl;
   }
   else{
-    string path = get_path(input);
+    string path = get_path(s);
     if(path.empty()){
       cout<<input<<" not found\n";
     }
