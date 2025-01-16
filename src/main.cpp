@@ -81,7 +81,7 @@ void commandChecker(string s){
 
 int main(int argc, char* argv[]) {
     // Normalize argv[0] to contain only the filename
-    filesystem::path programPath(argv[0]); 
+    std::filesystem::path programPath(argv[0]); 
     argv[0] = const_cast<char*>(programPath.filename().c_str());
   // Flush after every std::cout / std:cerr
   cout << unitbuf;
