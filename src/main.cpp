@@ -20,6 +20,27 @@ vector<string> split_sentence(string input) {
       return userinput;// Return the vector containing words
 }
 
+void commandChecker(string s){
+  vector<string> builtInCommand = {"exit","echo","type"};
+  int flag=0;
+  for(int i=0; i<builtInCommand.size(); i++)
+  {
+    if(s==builtInCommand[i])
+    {
+      flag=1;
+      break;
+    }
+  }
+  if(flag==1){
+    cout<<s<<" is a shell builtin"<<endl;
+  }
+  else{
+    cout<<s<<": not found"<<endl;
+  }
+
+
+}
+
 int main() {
   // Flush after every std::cout / std:cerr
   cout << unitbuf;
@@ -41,6 +62,9 @@ int main() {
           cout<<userinput[i]<<" ";
         }
         cout<<endl;
+    }
+    else if(userinput[0]=="type"){
+      commandChecker(userinput[1]);
     }
     else{
         cout<<input<<": command not found"<<endl;
