@@ -93,8 +93,20 @@ int main() {
       commandChecker(userinput[1]);
     }
     else{
-        cout<<input<<": command not found"<<endl;
-    }
+      string path_string = getenv("PATH");
+      vector<std::string> path = split_string(path_string, ':');
+      string filepath;
+      for(int i = 0; i < path.size(); i++){
+        filepath = path[i] + '/' + userinput[0];
+        ifstream file(filepath);
+        if(file.good()){
+          string command = "exec " + path[i] + '/' + input;
+          system(command.c_str());
+          break;
+        } 
+        else if(i == path.size() - 1){
+           cout << userinput[0] << ": not found\n";
+        }
     
   }
   
