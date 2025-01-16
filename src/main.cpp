@@ -6,6 +6,7 @@
 #include <fstream>
 using namespace std;
 
+namespace fs = std::filesystem;
 vector<string> split_string(const string &s, char delimiter){
     stringstream ss(s);
     vector<string> return_vect;
@@ -78,7 +79,10 @@ void commandChecker(string s){
   }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Normalize argv[0] to contain only the filename
+    filesystem::path programPath(argv[0]); 
+    argv[0] = const_cast<char*>(programPath.filename().c_str());
   // Flush after every std::cout / std:cerr
   cout << unitbuf;
   cerr << unitbuf;
