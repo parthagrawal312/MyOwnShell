@@ -32,18 +32,16 @@ int main() {
     getline(cin, input);
     
     vector<string> userinput = split_sentence(input);
-    switch(userinput[0]){
-      case "exit":
+    if(userinput[0]=="exit"){
         return 0;
-      case "echo":
+    }
+    else if(userinput[0]=="echo")
         for(int i=1; i<userinput.size(); i++)
         {
           cout<<userinput[i]<<" ";
         }
-        break;
-      default:
+    else{
         cout<<input<<": command not found"<<endl;
-        break;
     }
     
   }
