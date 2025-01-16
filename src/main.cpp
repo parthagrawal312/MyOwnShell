@@ -108,7 +108,7 @@ int main() {
       vector<string> path = split_string(path_string, ':');
       string filepath;
       for(int i = 0; i < path.size(); i++){
-        filepath = path[i] + '/' + userinput[1];
+        filepath = path[i] + '/' + userinput[0];
         ifstream file(filepath);
         if(file.good()){
           string command = "exec " + path[i] + '/' + input;
@@ -116,7 +116,7 @@ int main() {
           break;
         } 
         else if(i == path.size() - 1){
-           cout << userinput[1] << ": not found\n";
+           cout << userinput[0] << ": not found\n";
         }
       }
     }
