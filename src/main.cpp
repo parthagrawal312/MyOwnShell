@@ -35,12 +35,13 @@ int main() {
     if(userinput[0]=="exit"){
         return 0;
     }
-    else if(userinput[0]=="echo")
+    else if(userinput[0]=="echo"){
         for(int i=1; i<userinput.size(); i++)
         {
           cout<<userinput[i]<<" ";
         }
-        break;
+        cout<endl;
+    }
     else{
         cout<<input<<": command not found"<<endl;
     }
