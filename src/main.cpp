@@ -105,22 +105,22 @@ int main() {
     }
     else{
       string path_string = getenv("PATH");
-      cout<<"path_string"<<path_string<<endl;
+      cout<<"path_string is: "<<path_string<<endl;
       vector<string> path = split_string(path_string, ':');
       string filepath;
-      cout<<"filepath"<<filepath<<endl;
+      cout<<"filepath is: "<<filepath<<endl;
       for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
-        cout<<"filepath"<<filepath<<endl;
+        cout<<"filepath is : "<<filepath<<endl;
         ifstream file(filepath);
         if(file.good()){
           string command = "exec " + path[i] + '/' + input;
-          cout<<"command"<<command<<endl;
+          cout<<"command is: "<<command<<endl;
           system(command.c_str());
           break;
         } 
         else if(i == path.size() - 1){
-          cout<<"userinput[0]"<<userinput[0]<<endl;
+          cout<<"userinput[0] is: "<<userinput[0]<<endl;
            cout << userinput[0] << ": not found\n";
         }
       }
