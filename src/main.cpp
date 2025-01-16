@@ -112,7 +112,7 @@ int main() {
         ifstream file(filepath);
         if(file.good()){
           string command = "exec " + path[i] + '/' + input;
-          system(command.c_str());
+          filesystem(command.c_str());
           break;
         } 
         else if(i == path.size() - 1){
