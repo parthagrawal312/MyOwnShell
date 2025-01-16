@@ -7,9 +7,10 @@ int main() {
   cerr << unitbuf;
 
   // Uncomment this block to pass the first stage
-  cout << "$ ";
-
-  string input;
-  getline(cin, input);
-  cout<<input<<": command not found"<<endl;
+  while(true){
+    cout << "$ ";
+    string input;
+    getline(cin, input);
+    cout<<input<<": command not found"<<endl;
+  }
 }
