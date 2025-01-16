@@ -40,6 +40,7 @@ int main() {
         {
           cout<<userinput[i]<<" ";
         }
+        break;
     else{
         cout<<input<<": command not found"<<endl;
     }
