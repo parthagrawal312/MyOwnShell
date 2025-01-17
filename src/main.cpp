@@ -44,14 +44,19 @@ string get_path(string command){
 
 vector<string> split_sentence(string input) {
       vector<string> userinput;
+      bool sig=0;
       string word = "";
       for (char c : input) {  // Iterate through each character in the user input sentence
-        if (c == ' ') {  
+        if(c=='\'' || c=='\"'){
+          sig = !sig;
+        }
+        if(sig==1){
+          word += c;
+        }
+        userinput.emplace_back(word);
+        else if (c == ' ') {  
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
-        }
-        else if(c=='\'' || c=='\"'){
-          continue;
         }
         else {
             word += c;// Append the character to the current word
