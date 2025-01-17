@@ -10,7 +10,7 @@ using namespace std;
 void currentPathFinder(){
   string cwd = std::filesystem::current_path();
   string print_cwd = cwd.substr(0, cwd.length());
-  std::cout << print_cwd << "\n";
+  cout << print_cwd << "\n";
 }
 
 vector<string> split_string(const string &s, char delimiter){
@@ -61,7 +61,7 @@ vector<string> split_sentence(string input) {
 }
 
 void commandChecker(string s){
-  vector<string> builtInCommand = {"exit","echo","type"};
+  vector<string> builtInCommand = {"exit","echo","type","pwd"};
   int flag=0;
   for(int i=0; i<builtInCommand.size(); i++)
   {
