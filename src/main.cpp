@@ -44,24 +44,15 @@ string get_path(string command){
 
 vector<string> split_sentence(string input) {
       vector<string> userinput;
-      bool sig=0;
       string word = "";
       for (char c : input) {  // Iterate through each character in the user input sentence
-        if(c=='\'' || c=='\"'){
-          sig = !sig;
-        }
-        else if(sig==1){
-          word += c;
-        }
-        
-        if (c == ' ' && sig!=1) {  
+        if (c == ' ') {  
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
         else {
             word += c;// Append the character to the current word
         }
-        userinput.emplace_back(word);
       }
       if (!word.empty()) { // Add the last word to the vector
         userinput.emplace_back(word);
@@ -124,7 +115,7 @@ int main() {
     }
     else if(userinput[0]=="cd"){
       if (userinput[1] == "~"){
-        std::filesystem::current_path(getenv("HOME"));
+        current_path(getenv("HOME"));
       }
       else  if (std::filesystem::exists(userinput[1])){
           std::filesystem::current_path(userinput[1]);
