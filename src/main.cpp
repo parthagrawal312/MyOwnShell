@@ -114,10 +114,13 @@ int main() {
       currentPathFinder();
     }
     else if(userinput[0]=="cd"){
-        if (std::filesystem::exists(userinput[1])){
+      if (userinput[1] == "~"){
+        chdir(getenv("HOME"));
+      }
+      else  if (std::filesystem::exists(userinput[1])){
           std::filesystem::current_path(userinput[1]);
-        } 
-        else cout << userinput[1] << ": No such file or directory" <<endl;
+      } 
+      else cout << userinput[1] << ": No such file or directory" <<endl;
     }
     else{
       string path_string = getenv("PATH");
