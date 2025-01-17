@@ -50,17 +50,18 @@ vector<string> split_sentence(string input) {
         if(c=='\'' || c=='\"'){
           sig = !sig;
         }
-        if(sig==1){
+        else if(sig==1){
           word += c;
         }
-        userinput.emplace_back(word);
-        else if (c == ' ') {  
+        
+        if (c == ' ' && sign!=1) {  
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
         else {
             word += c;// Append the character to the current word
         }
+        userinput.emplace_back(word);
       }
       if (!word.empty()) { // Add the last word to the vector
         userinput.emplace_back(word);
