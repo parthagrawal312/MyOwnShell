@@ -103,12 +103,14 @@ int main() {
     }
     else if(userinput[0]=="echo"){
         string word="";
+        bool sig=0;
         for(int i=1; i<userinput.size(); i++)
         { 
           for(char c : userinput[i])
           {
             if(c=='\'' || c=='\"')
             {
+              sig=!sig;
               continue;
             }
             else{
@@ -116,7 +118,12 @@ int main() {
             }
           }
           userinput[i]=word;
+          if(sig==1){
+            cout<<userinput[i];
+          }
+          else{
           cout<<userinput[i]<<" ";
+          }
         }
         cout<<endl;
     }
