@@ -115,7 +115,7 @@ int main() {
     }
     else if(userinput[0]=="cd"){
       if (userinput[1] == "~"){
-        chdir(getenv("HOME"));
+        std::filesystem::current_path(getenv("HOME"));
       }
       else  if (std::filesystem::exists(userinput[1])){
           std::filesystem::current_path(userinput[1]);
