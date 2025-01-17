@@ -119,11 +119,13 @@ int main() {
           }
           userinput[i]=word;
           word="";
-          if(sig==1){
+          if(sig==1 && lastout!=" "){
+            lastout=userinput[i];
             cout<<userinput[i]<<" ";
           }
           else{
-          cout<<userinput[i]<<" ";
+            lastout=userinput[i];
+            cout<<userinput[i]<<" ";
           }
         }
         cout<<endl;
