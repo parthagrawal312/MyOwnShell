@@ -103,6 +103,7 @@ int main() {
     }
     else if(userinput[0]=="echo"){
         string word="";
+        string lastout="";
         bool sig=0;
         for(int i=1; i<userinput.size(); i++)
         { 
