@@ -102,8 +102,20 @@ int main() {
         return 0;
     }
     else if(userinput[0]=="echo"){
+        string word="";
         for(int i=1; i<userinput.size(); i++)
-        {
+        { 
+          for(char c : userinput[i])
+          {
+            if(c=="\'")
+            {
+              continue;
+            }
+            else{
+              word = word + c;
+            }
+          }
+          userinput[i]=word;
           cout<<userinput[i]<<" ";
         }
         cout<<endl;
