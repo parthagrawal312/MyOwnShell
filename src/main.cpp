@@ -107,7 +107,7 @@ int main() {
         { 
           for(char c : userinput[i])
           {
-            if(c=="\'")
+            if(c=='\'' || c=='\"')
             {
               continue;
             }
