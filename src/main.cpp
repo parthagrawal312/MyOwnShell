@@ -122,7 +122,7 @@ int main() {
             cout<<userinput[i]<<" ";
           }
           else{
-          cout<<userinput[i]<<;
+          cout<<userinput[i];
           }
         }
         cout<<endl;
