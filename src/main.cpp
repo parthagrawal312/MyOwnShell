@@ -115,7 +115,7 @@ int main() {
     }
     else if(userinput[0]=="cd"){
         if (std::filesystem::exists(userinput[1])){
-          std::filesystem::current_path(userinpuent[1]);
+          std::filesystem::current_path(userinput[1]);
         } 
         else cout << userinput[1] << ": No such file or directory" <<endl;
     }
