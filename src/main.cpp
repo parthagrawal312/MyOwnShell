@@ -6,6 +6,13 @@
 #include <fstream>
 using namespace std;
 
+
+void currentPathFinder(){
+  string cwd = std::filesystem::current_path();
+  string print_cwd = cwd.substr(0, cwd.length());
+  std::cout << print_cwd << "\n";
+}
+
 vector<string> split_string(const string &s, char delimiter){
     stringstream ss(s);
     vector<string> return_vect;
@@ -102,6 +109,9 @@ int main() {
     }
     else if(userinput[0]=="type"){
       commandChecker(userinput[1]);
+    }
+    else if(userinput[0]=="pwd"){
+      currentPathFinder();
     }
     else{
       string path_string = getenv("PATH");
