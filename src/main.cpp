@@ -50,6 +50,7 @@ vector<string> split_sentence(string input) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
+
         else {
             word += c;// Append the character to the current word
         }
@@ -115,7 +116,7 @@ int main() {
     }
     else if(userinput[0]=="cd"){
       if (userinput[1] == "~"){
-        current_path(getenv("HOME"));
+        std::filesystem::current_path(getenv("HOME"));
       }
       else  if (std::filesystem::exists(userinput[1])){
           std::filesystem::current_path(userinput[1]);
