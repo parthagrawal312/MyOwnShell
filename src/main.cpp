@@ -118,6 +118,7 @@ int main() {
             }
           }
           userinput[i]=word;
+          word="";
           if(sig==1){
             cout<<userinput[i];
           }
