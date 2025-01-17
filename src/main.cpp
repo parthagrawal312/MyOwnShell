@@ -124,7 +124,7 @@ int main() {
             lastout=userinput[i];
             cout<<userinput[i]<<" ";
           }
-          else{
+          else if(lastout!=" "){
             lastout=userinput[i];
             cout<<userinput[i]<<" ";
           }
