@@ -57,7 +57,7 @@ vector<string> split_sentence(string input) {
           word = word+c;
         }
           // Iterate through each character in the user input sentence
-        else if (openquote==false && c == ' ' && userinput[userinput.size()]!=' ') {  
+        else if (openquote==false && c == ' ') {  
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
