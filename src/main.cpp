@@ -49,17 +49,13 @@ vector<string> split_sentence(string input) {
       string lastinput="";
       bool openquote=false;
       for (char c : input) {
-        if(c=='\'' || c=='\"')
+        if(c=='\'' || c=='\"')// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
         }
-        // if(openquote==true){
-        //   word = word+c;
-        // }
-          // Iterate through each character in the user input sentence
+          
         if (openquote==false && c == ' ') {
-          //  cout<<"emplacedWord is :"<<word<<endl;
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
@@ -72,29 +68,6 @@ vector<string> split_sentence(string input) {
       } 
       return userinput;// Return the vector containing words
 }
-
-
-
-
-
-// vector<string> split_sentence(string input) {
-//       vector<string> userinput;
-//       string word = "";
-//       for (char c : input) {  // Iterate through each character in the user input sentence
-//         if (c == ' ') {  
-//             userinput.emplace_back(word);// If a space is found, add the word to the vector
-//             word = "";// Reset the word
-//         }
-
-//         else {
-//             word += c;// Append the character to the current word
-//         }
-//       }
-//       if (!word.empty()) { // Add the last word to the vector
-//         userinput.emplace_back(word);
-//       } 
-//       return userinput;// Return the vector containing words
-// }
 
 void commandChecker(string s){
   vector<string> builtInCommand = {"exit","echo","type","pwd"};
@@ -148,27 +121,6 @@ int main() {
           else{
           cout<<userinput[i]<<" ";
           }
-          // for(char c : userinput[i])
-          // {
-          //   if(c=='\'' || c=='\"')
-          //   {
-          //     sig=!sig;
-          //     continue;
-          //   }
-          //   else{
-          //     word = word + c;
-          //   }
-          // }
-          // userinput[i]=word;
-          // word="";
-          // if(sig==1 && lastout!=" "){
-          //   lastout=userinput[i];
-          //   cout<<userinput[i]<<" ";
-          // }
-          // else if(lastout!=" "){
-          //   lastout=userinput[i];
-          //   cout<<userinput[i]<<" ";
-          // }
         }
         cout<<endl;
     }
