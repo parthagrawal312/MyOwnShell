@@ -65,6 +65,7 @@ vector<string> split_sentence(string input) {
         if(c=='\\')
         {
           keepNextCharSafe==true;
+          continue;
         }
           
         if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
