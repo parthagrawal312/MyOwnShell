@@ -52,7 +52,7 @@ vector<string> split_sentence(string input) {
       bool opendoublequote=false;
       bool keepNextCharSafe=false;
       for (char c : input) {
-        if (keepNextCharSafe) {
+        if (keepNextCharSafe==true) {
             word += c;  // Add escaped character
             keepNextCharSafe = false;  // Reset flag
             continue;
