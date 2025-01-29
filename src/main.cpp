@@ -46,6 +46,7 @@ string get_path(string command){
 vector<string> split_sentence(string input) {
       vector<string> userinput;
       string word = "";
+      string lastinput="";
       bool openquote=false;
       for (char c : input) {
         if(c=='\'' || c=='\"')
@@ -57,7 +58,8 @@ vector<string> split_sentence(string input) {
           word = word+c;
         }
           // Iterate through each character in the user input sentence
-        else if (openquote==false && c == ' ') {  
+        else if (openquote==false && c == ' ' && lastinput != " ") {
+            lastinput=word;  
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
