@@ -49,14 +49,20 @@ vector<string> split_sentence(string input) {
       string lastinput="";
       char whichquote;
       bool openquote=false;
+      bool opendoublequote=false;
       for (char c : input) {
         if(c=='\'')// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
         }
+        if(c=='\"')
+        {
+          opendoublequote=!opendoublequote;
+          continue;
+        }
           
-        if (openquote==false && c == ' ') {
+        if (openquote==false &&opendoublequote==false && c == ' ') {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
