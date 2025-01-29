@@ -147,6 +147,7 @@ int main() {
             continue;
           }
           else{
+            cout<<"ertgyhj";
             cout<<userinput[i]<<" ";
           }
           
