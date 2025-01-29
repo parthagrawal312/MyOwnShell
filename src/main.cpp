@@ -67,7 +67,11 @@ vector<string> split_sentence(string input) {
           keepNextCharSafe==true;
           continue;
         }
-          
+        if(keepNextCharSafe==true)
+        {
+          word=word+c;
+          keepNextCharSafe=false;
+        } 
         if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
