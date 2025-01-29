@@ -143,6 +143,7 @@ int main() {
         for(int i=1; i<userinput.size(); i++)
         {
           if(userinput[i]==" " && userinput[i-1]==" "){
+            cout<<"executbhu";
             continue;
           }
           else{
