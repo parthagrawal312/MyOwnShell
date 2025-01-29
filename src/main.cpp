@@ -57,7 +57,7 @@ vector<string> split_sentence(string input) {
             keepNextCharSafe = false;  // Reset flag
             continue;
         }
-        if(c=='\'' /*&& opendoublequote==false*/)// Iterate through each character in the user input sentence
+        if(c=='\'' && opendoublequote==false)// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
