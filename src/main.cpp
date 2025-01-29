@@ -143,7 +143,7 @@ int main() {
         for(int i=1; i<userinput.size(); i++)
         {
           
-            cout<<"[]"<<userinput[i]<<" ";
+            cout<<userinput[i]<<" ";
           
           // for(char c : userinput[i])
           // {
