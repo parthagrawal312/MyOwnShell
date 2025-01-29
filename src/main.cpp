@@ -51,7 +51,7 @@ vector<string> split_sentence(string input) {
       bool openquote=false;
       bool opendoublequote=false;
       for (char c : input) {
-        if(c=='\'' && opendoublequotes==false)// Iterate through each character in the user input sentence
+        if(c=='\'' && opendoublequote==false)// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
