@@ -59,7 +59,7 @@ vector<string> split_sentence(string input) {
         // }
           // Iterate through each character in the user input sentence
         if (openquote==false && c == ' ') {
-            cout<<"emplacedWord is :"<<word<<endl;
+          //  cout<<"emplacedWord is :"<<word<<endl;
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
@@ -143,7 +143,7 @@ int main() {
         for(int i=1; i<userinput.size(); i++)
         {
            
-            cout<<userinput[i]<<" ";
+           // cout<<userinput[i]<<" ";
           // for(char c : userinput[i])
           // {
           //   if(c=='\'' || c=='\"')
