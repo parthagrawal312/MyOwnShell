@@ -62,7 +62,7 @@ vector<string> split_sentence(string input) {
           openquote=!openquote;
           continue;
         }
-        if(c=='\"')
+        if(c=='\"' && openquote==false)
         {
           opendoublequote=!opendoublequote;
           continue;
