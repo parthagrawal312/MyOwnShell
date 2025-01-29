@@ -50,6 +50,7 @@ vector<string> split_sentence(string input) {
       char whichquote;
       bool openquote=false;
       bool opendoublequote=false;
+      bool keepNextCharSafe=false;
       for (char c : input) {
         if(c=='\'' && opendoublequote==false)// Iterate through each character in the user input sentence
         {
@@ -61,8 +62,12 @@ vector<string> split_sentence(string input) {
           opendoublequote=!opendoublequote;
           continue;
         }
+        if(c=='\\')
+        {
+          keepNextCharSafe==true;
+        }
           
-        if (openquote==false && opendoublequote==false && c == ' ') {
+        if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
