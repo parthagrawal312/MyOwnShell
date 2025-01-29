@@ -142,13 +142,8 @@ int main() {
         bool sig=0;
         for(int i=1; i<userinput.size(); i++)
         {
-          if(userinput[i]==" ")
-          {
-            continue;
-          }
-          else{
-            cout<<userinput[i]<<" ";
-          }
+          
+            cout<<"[]"<<userinput[i]<<" ";
           
           // for(char c : userinput[i])
           // {
