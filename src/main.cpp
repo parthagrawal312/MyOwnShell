@@ -47,9 +47,10 @@ vector<string> split_sentence(string input) {
       vector<string> userinput;
       string word = "";
       string lastinput="";
+      char whichquote;
       bool openquote=false;
       for (char c : input) {
-        if(c=='\'' || c=='\"')// Iterate through each character in the user input sentence
+        if(c=='\'')// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
