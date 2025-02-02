@@ -47,7 +47,7 @@ string get_path(string command){
 
 
 
-vector<string> split_sentence(string input) {
+vector<string> supersplit_sentence(string input) {
       vector<string> userinput;
       string word = "";
       string lastinput="";
@@ -92,6 +92,48 @@ vector<string> split_sentence(string input) {
 
 
 
+
+vector<string> split_sentence(string input) {
+    vector<string> userinput;
+    string word = "";
+    bool openquote = false;
+    bool opendoublequote = false;
+    bool keepNextCharSafe = false;
+
+    for (char c : input) {
+        if (keepNextCharSafe) {
+            word += c;
+            keepNextCharSafe = false;
+            continue;
+        }
+
+        if (c == '\\') {
+            keepNextCharSafe = true;
+            continue;
+        } else if (c == '\'' && !opendoublequote) {
+            openquote = !openquote;
+            continue;
+        } else if (c == '"' && !openquote) {
+            opendoublequote = !opendoublequote;
+            continue;
+        }
+
+        if (!openquote && !opendoublequote && c == ' ') {
+            if (!word.empty()) {
+                userinput.push_back(word);
+                word = "";
+            }
+        } else {
+            word += c;
+        }
+    }
+
+    if (!word.empty()) {
+        userinput.push_back(word);
+    }
+
+    return userinput;
+}
 
 
 
