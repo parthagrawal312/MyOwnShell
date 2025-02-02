@@ -47,7 +47,7 @@ string get_path(string command){
     {
       getline(ss , path, ':');
       string fullPath = path + "/" + newCommand;
-      if (filesystem::exists(fullPath)){
+      if (std::filesystem::exists(fullPath)){
         return path + "/" + chFront + newCommand + chBack;
       }
     }
