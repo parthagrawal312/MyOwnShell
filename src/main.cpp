@@ -25,31 +25,17 @@ vector<string> split_string(const string &s, char delimiter){
 
 
 string get_path(string command){
-  string newCommand;
-  string chFront, chBack;
-  if(command.front() == '\'' || command.front() == '\"') {
-    if(command.size() > 0 && (command.front() == '\'' || command.front() == '\"'))
-      newCommand = command.substr(1);
-    if(command.size() > 0 && (command.back() == '\'' || command.back() == '\"'))
-      newCommand = newCommand.substr(0, newCommand.size()-1);
-    chFront = command.front();
-    chBack = command.back();
-  }
-  else {
-    newCommand = command;
-    chFront = "";
-    chBack = "";
-  }
   string path_env = getenv("PATH");
   stringstream ss(path_env);
   string path;
-    while (!ss.eof())
-    {
-      getline(ss , path, ':');
-      string fullPath = path + "/" + newCommand;
-      if (std::filesystem::exists(fullPath)){
-        return path + "/" + chFront + newCommand + chBack;
-      }
+   while(!ss.eof()){
+      getline(ss, path, ':');
+
+        string abs_path = path + '/' + command;
+
+        if(filesystem::exists(abs_path)){
+            return abs_path;
+        }
     }
     return "";  
 }
@@ -291,12 +277,7 @@ int main() {
     string input;
     getline(cin, input);
     
-
-    
-    
     vector<string> userinput = split_sentence(input);
-
-    
     if(userinput[0]=="exit"){
         return 0;
     }
@@ -332,17 +313,17 @@ int main() {
     }
     else{
       string path_string = getenv("PATH");
-     
+      //cout<<"path_string is: "<<path_string<<endl;
       vector<string> path = split_string(path_string, ':');
       string filepath;
-   
+     // cout<<"filepath is: "<<filepath<<endl;
       for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
- 
+      //  cout<<"filepath is : "<<filepath<<endl;
         ifstream file(filepath);
         if(file.good()){
           string command =  input;  // "exec " + path[i] + '/' +
-
+      //    cout<<"command is: "<<command<<endl;
           system(command.c_str());
           break;
         } 
