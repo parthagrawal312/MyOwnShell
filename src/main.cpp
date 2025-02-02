@@ -43,7 +43,7 @@ string get_path(string command){
   string path_env = getenv("PATH");
   stringstream ss(path_env);
   string path;
-    while (!pathStream.eof())
+    while (!ss.eof())
     {
       getline(pathStream, path, ':');
       string fullPath = path + "/" + newCommand;
