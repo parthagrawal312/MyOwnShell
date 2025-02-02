@@ -50,6 +50,56 @@ string get_path(string command){
 
 
 
+// vector<string> split_sentence(string input) {
+//     vector<string> userinput;
+//     string word = "";
+//     bool openquote = false;
+//     bool opendoublequote = false;
+//     bool keepNextCharSafe = false;
+
+//     for (char c : input) {
+//         if (keepNextCharSafe==true) {
+//             word += c;
+//             keepNextCharSafe = false;
+//             continue;
+//         }
+
+//         if (c == '\\' && openquote==false) {
+//             keepNextCharSafe = true;
+//             continue;
+//         }
+//         else if (c == '\\' && openquote==true) {
+//             word += c;
+//             continue;
+//         }
+//         else if (c == '\'' && opendoublequote==false) {
+//             openquote = !openquote;
+//             continue;
+//         } 
+//         else if (c == '"' && openquote==false) {
+//             opendoublequote = !opendoublequote;
+//             continue;
+//         }
+
+//         if (openquote==false && opendoublequote==false && c == ' ') {
+//             if (!word.empty()) {
+//                 userinput.push_back(word);
+//                 word = "";
+//             }
+//         } else {
+//             word += c;
+//         }
+//     }
+
+//     if (!word.empty()) {
+//         userinput.push_back(word);
+//     }
+
+//     return userinput;
+// }
+
+
+
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
@@ -57,40 +107,52 @@ vector<string> split_sentence(string input) {
     bool opendoublequote = false;
     bool keepNextCharSafe = false;
 
-    for (char c : input) {
-        if (keepNextCharSafe==true) {
-            word += c;
-            keepNextCharSafe = false;
+    for (size_t i = 0; i < input.length(); i++) {
+        char c = input[i];
+
+        // If we are processing an escape sequence
+        if (keepNextCharSafe) {
+            word += c;  // Add the escaped character directly
+            keepNextCharSafe = false;  // Reset the escape flag
             continue;
         }
 
-        if (c == '\\' && openquote==false) {
-            keepNextCharSafe = true;
-            continue;
+        // If the character is a backslash inside double quotes, handle escaping
+        if (c == '\\' && opendoublequote) {
+            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\n')) {
+                keepNextCharSafe = true;  // Mark that the next character should be treated as escaped
+                word += c;  // Add the backslash itself to the word
+                continue;
+            } else {
+                word += c;  // Treat the backslash as a regular character if not followed by a special character
+                continue;
+            }
         }
-        else if (c == '\\' && openquote==true) {
-            word += c;
-            continue;
-        }
-        else if (c == '\'' && opendoublequote==false) {
+
+        // Handle single quotes (switch openquote state)
+        if (c == '\'' && !opendoublequote) {
             openquote = !openquote;
             continue;
-        } 
-        else if (c == '"' && openquote==false) {
+        }
+
+        // Handle double quotes (switch opendoublequote state)
+        if (c == '"' && !openquote) {
             opendoublequote = !opendoublequote;
             continue;
         }
 
-        if (openquote==false && opendoublequote==false && c == ' ') {
+        // Handle space (only split if not inside quotes)
+        if (!openquote && !opendoublequote && c == ' ') {
             if (!word.empty()) {
-                userinput.push_back(word);
-                word = "";
+                userinput.push_back(word);  // Push the word to the vector
+                word = "";  // Reset the word
             }
         } else {
-            word += c;
+            word += c;  // Add character to the current word
         }
     }
 
+    // Add the last word to the vector if it's not empty
     if (!word.empty()) {
         userinput.push_back(word);
     }
