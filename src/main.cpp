@@ -64,10 +64,14 @@ vector<string> split_sentence(string input) {
             continue;
         }
 
-        if (c == '\\') {
+        if (c == '\\' && openquote==false) {
             keepNextCharSafe = true;
             continue;
-        } 
+        }
+        else if (c == '\\' openquote==true) {
+            word += c;
+            continue;
+        }
         else if (c == '\'' && opendoublequote==false) {
             openquote = !openquote;
             continue;
