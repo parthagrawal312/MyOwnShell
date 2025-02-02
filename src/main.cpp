@@ -178,7 +178,7 @@ vector<string> split_sentence(string input) {
     for (size_t i = 0; i < input.length(); i++) {
         char c = input[i];
 
-        // Handle escape sequences
+        // Handle escape sequences (escape characters like \')
         if (keepNextCharSafe) {
             word += c;  // Add the escaped character to the word
             keepNextCharSafe = false;  // Reset the escape flag
@@ -196,7 +196,7 @@ vector<string> split_sentence(string input) {
             }
         }
 
-        // Handle backslashes inside single quotes
+        // Handle backslashes inside single quotes (escape backslashes)
         if (c == '\\' && openquote) {
             word += c;  // Treat the backslash as part of the word in single quotes
             continue;
