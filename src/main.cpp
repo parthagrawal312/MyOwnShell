@@ -66,17 +66,17 @@ vector<string> split_sentence(string input) {
             keepNextCharSafe = false;  // Reset flag
             continue;
         }
-        else if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
+        if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
         }
-        else if(c=='\"' && keepNextCharSafe==false)
+        if(c=='\"' && keepNextCharSafe==false)
         {
           opendoublequote=!opendoublequote;
           continue;
         }
-        else if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
+        if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
