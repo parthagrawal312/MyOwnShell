@@ -121,7 +121,7 @@ vector<string> split_sentence(string input) {
         if (c == '\\' && opendoublequote) {
             if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || (input[i + 1] == '\\' && input[i + 2] == 'n') || input[i + 1] == '\'')) {
                 keepNextCharSafe = true;  // Mark next character as escaped
-                word += c;  // Add backslash to word
+                //word += c;  // Add backslash to word
                 continue;
             } else {
                 word += c;  // Treat backslash as a regular character if not followed by an escape sequence
