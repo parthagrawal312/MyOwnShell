@@ -25,17 +25,31 @@ vector<string> split_string(const string &s, char delimiter){
 
 
 string get_path(string command){
+  string newCommand;
+  string chFront, chBack;
+  if(command.front() == '\'' || command.front() == '\"') {
+    if(command.size() > 0 && (command.front() == '\'' || command.front() == '\"'))
+      newCommand = command.substr(1);
+    if(command.size() > 0 && (command.back() == '\'' || command.back() == '\"'))
+      newCommand = newCommand.substr(0, newCommand.size()-1);
+    chFront = command.front();
+    chBack = command.back();
+  }
+  else {
+    newCommand = command;
+    chFront = "";
+    chBack = "";
+  }
   string path_env = getenv("PATH");
   stringstream ss(path_env);
   string path;
-   while(!ss.eof()){
-      getline(ss, path, ':');
-
-        string abs_path = path + '/' + command;
-
-        if(filesystem::exists(abs_path)){
-            return abs_path;
-        }
+    while (!pathStream.eof())
+    {
+      getline(pathStream, path, ':');
+      string fullPath = path + "/" + newCommand;
+      if (filesystem::exists(fullPath)){
+        return path + "/" + chFront + newCommand + chBack;
+      }
     }
     return "";  
 }
