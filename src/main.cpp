@@ -110,38 +110,44 @@ vector<string> split_sentence(string input) {
     for (size_t i = 0; i < input.length(); i++) {
         char c = input[i];
 
-        // If we are processing an escape sequence
+        // Handle escape sequences
         if (keepNextCharSafe) {
-            word += c;  // Add the escaped character directly
+            word += c;  // Add the escaped character to the word
             keepNextCharSafe = false;  // Reset the escape flag
             continue;
         }
 
-        // If the character is a backslash inside double quotes, handle escaping
+        // Handle backslashes inside double quotes (escape special characters)
         if (c == '\\' && opendoublequote) {
-            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\n')) {
-                keepNextCharSafe = true;  // Mark that the next character should be treated as escaped
-                word += c;  // Add the backslash itself to the word
+            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\n' || input[i + 1] == '\'')) {
+                keepNextCharSafe = true;  // Mark next character as escaped
+                word += c;  // Add backslash to word
                 continue;
             } else {
-                word += c;  // Treat the backslash as a regular character if not followed by a special character
+                word += c;  // Treat backslash as a regular character if not followed by an escape sequence
                 continue;
             }
         }
 
-        // Handle single quotes (switch openquote state)
+        // Handle backslashes inside single quotes
+        if (c == '\\' && openquote) {
+            word += c;  // Treat the backslash as part of the word in single quotes
+            continue;
+        }
+
+        // Handle single quotes (toggle openquote)
         if (c == '\'' && !opendoublequote) {
             openquote = !openquote;
             continue;
         }
 
-        // Handle double quotes (switch opendoublequote state)
+        // Handle double quotes (toggle opendoublequote)
         if (c == '"' && !openquote) {
             opendoublequote = !opendoublequote;
             continue;
         }
 
-        // Handle space (only split if not inside quotes)
+        // Space handling (only split if not inside quotes)
         if (!openquote && !opendoublequote && c == ' ') {
             if (!word.empty()) {
                 userinput.push_back(word);  // Push the word to the vector
@@ -159,6 +165,7 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
 
 
 
