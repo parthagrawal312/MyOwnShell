@@ -24,38 +24,20 @@ vector<string> split_string(const string &s, char delimiter){
   }
 
 
-// string get_path(string command){
-//   string path_env = getenv("PATH");
-//   stringstream ss(path_env);
-//   string path;
-//    while(!ss.eof()){
-//       getline(ss, path, ':');
+string get_path(string command){
+  string path_env = getenv("PATH");
+  stringstream ss(path_env);
+  string path;
+   while(!ss.eof()){
+      getline(ss, path, ':');
 
-//         string abs_path = path + '/' + command;
-
-//         if(filesystem::exists(abs_path)){
-//             return abs_path;
-//         }
-//     }
-//     return "";  
-// }
-string get_path(string command) {
-    string path_env = getenv("PATH");
-    stringstream ss(path_env);
-    string path;
-
-    while (!ss.eof()) {
-        getline(ss, path, ':');
-
-        // Handle paths with spaces and special characters
         string abs_path = path + '/' + command;
 
-        if (filesystem::exists(abs_path)) {
+        if(filesystem::exists(abs_path)){
             return abs_path;
         }
     }
-
-    return "";
+    return "";  
 }
 
 
@@ -186,70 +168,6 @@ string get_path(string command) {
 
 
 
-// vector<string> split_sentence(string input) {
-//     vector<string> userinput;
-//     string word = "";
-//     bool openquote = false;  // for single quote
-//     bool opendoublequote = false;  // for double quote
-//     bool keepNextCharSafe = false;  // for escaped characters
-
-//     for (size_t i = 0; i < input.length(); i++) {
-//         char c = input[i];
-
-//         // Handle escape sequences (escape characters like \')
-//         if (keepNextCharSafe) {
-//             word += c;  // Add the escaped character to the word
-//             keepNextCharSafe = false;  // Reset the escape flag
-//             continue;
-//         }
-
-//         // Handle backslashes inside double quotes (escape special characters)
-//         if (c == '\\' && opendoublequote) {
-//             if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\'')) {
-//                 keepNextCharSafe = true;  // Mark next character as escaped
-//                 continue;
-//             } else {
-//                 word += c;  // Treat backslash as a regular character if not followed by an escape sequence
-//                 continue;
-//             }
-//         }
-
-//         // Handle backslashes inside single quotes (escape backslashes)
-//         if (c == '\\' && openquote) {
-//             word += c;  // Treat the backslash as part of the word in single quotes
-//             continue;
-//         }
-
-//         // Handle single quotes (toggle openquote)
-//         if (c == '\'' && !opendoublequote) {
-//             openquote = !openquote;
-//             continue;
-//         }
-
-//         // Handle double quotes (toggle opendoublequote)
-//         if (c == '"' && !openquote) {
-//             opendoublequote = !opendoublequote;
-//             continue;
-//         }
-
-//         // Space handling (only split if not inside quotes)
-//         if (!openquote && !opendoublequote && c == ' ') {
-//             if (!word.empty()) {
-//                 userinput.push_back(word);  // Push the word to the vector
-//                 word = "";  // Reset the word
-//             }
-//         } else {
-//             word += c;  // Add character to the current word
-//         }
-//     }
-
-//     // Add the last word to the vector if it's not empty
-//     if (!word.empty()) {
-//         userinput.push_back(word);
-//     }
-
-//     return userinput;
-// }
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
@@ -394,28 +312,27 @@ int main() {
       else cout << userinput[1] << ": No such file or directory" <<endl;
     }
     else{
-    string path_string = getenv("PATH");
-    vector<string> path = split_string(path_string, ':');
-    string filepath;
-
-    for (int i = 0; i < path.size(); i++) {
+      string path_string = getenv("PATH");
+      //cout<<"path_string is: "<<path_string<<endl;
+      vector<string> path = split_string(path_string, ':');
+      string filepath;
+     // cout<<"filepath is: "<<filepath<<endl;
+      for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
-
-        if (filesystem::exists(filepath)) {
-            // Construct the full command with arguments
-            string command = filepath;
-            for (size_t j = 1; j < userinput.size(); j++) {
-                command += " " + userinput[j];
-            }
-
-            // Execute the command
-            system(command.c_str());
-            break;
-        } else if (i == path.size() - 1) {
-            cout << userinput[0] << ": not found\n";
+      //  cout<<"filepath is : "<<filepath<<endl;
+        ifstream file(filepath);
+        if(file.good()){
+          string command =  input;  // "exec " + path[i] + '/' +
+      //    cout<<"command is: "<<command<<endl;
+          system(command.c_str());
+          break;
+        } 
+        else if(i == path.size() - 1){
+       //   cout<<"userinput[0] is: "<<userinput[0]<<endl;
+           cout << userinput[0] << ": not found\n";
         }
+      }
     }
-  }
   }
   
 }
