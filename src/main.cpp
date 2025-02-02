@@ -187,38 +187,44 @@ int main() {
           cout << "cd: " << target_dir << ": " << ec.message() << endl;
       }
     }
-    else{
-      string path_string = getenv("PATH");
-      vector<string> path = split_string(path_string, ':');
-      string filepath;
-      bool found = false;
-      for(int i = 0; i < path.size(); i++){
-        filepath = path[i] + '/' + userinput[0];
-        if(filesystem::exists(filepath) && filesystem::is_regular_file(filepath)){
-          // Execute the command using the absolute path
-          string command;
-          for (const auto& arg : userinput) {
-              if (arg.find(' ') != string::npos) {
-                  command += "'" + arg + "' ";
+else{
+  string path_string = getenv("PATH");
+  vector<string> path = split_string(path_string, ':');
+  string filepath;
+  bool found = false;
+  for(int i = 0; i < path.size(); i++){
+    filepath = path[i] + '/' + userinput[0];
+    if(filesystem::exists(filepath) && filesystem::is_regular_file(filepath)){
+      // Build the command with proper quoting
+      string command;
+      for (const auto& arg : userinput) {
+          string escaped_arg;
+          escaped_arg += "'"; // Start single quote
+          for (char c : arg) {
+              if (c == '\'') {
+                  // Replace ' with '\''
+                  escaped_arg += "'\\''";
               } else {
-                  command += arg + " ";
+                  escaped_arg += c;
               }
           }
-          // Remove trailing space
-          if (!command.empty()) {
-              command.pop_back();
-          }
-          int result = system(command.c_str());
-          if (result != 0) {
-              cerr << "Command execution failed with code " << result << endl;
-          }
-          found = true;
-          break;
-        } 
+          escaped_arg += "'"; // End single quote
+          command += escaped_arg + " ";
       }
-      if (!found) {
-          cout << userinput[0] << ": not found" << endl;
+      if (!command.empty()) {
+          command.pop_back(); // Remove trailing space
       }
-    }
+      int result = system(command.c_str());
+      if (result != 0) {
+          cerr << "Command execution failed with code " << result << endl;
+      }
+      found = true;
+      break;
+    } 
+  }
+  if (!found) {
+      cout << userinput[0] << ": not found" << endl;
+  }
+}
   }
 }
