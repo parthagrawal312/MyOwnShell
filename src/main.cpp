@@ -58,7 +58,7 @@ vector<string> split_sentence(string input) {
       for (char c : input) {
         if(c=='\\')
         {
-          keepNextCharSafe==true;
+          keepNextCharSafe=true;
           continue;
         }
         else if (keepNextCharSafe==true) {
