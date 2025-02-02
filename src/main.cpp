@@ -100,12 +100,80 @@ string get_path(string command){
 
 
 
+// vector<string> split_sentence(string input) {
+//     vector<string> userinput;
+//     string word = "";
+//     bool openquote = false;
+//     bool opendoublequote = false;
+//     bool keepNextCharSafe = false;
+
+//     for (size_t i = 0; i < input.length(); i++) {
+//         char c = input[i];
+
+//         // Handle escape sequences
+//         if (keepNextCharSafe==true) {
+//             word += c;  // Add the escaped character to the word
+//             keepNextCharSafe = false;  // Reset the escape flag
+//             continue;
+//         }
+
+//         // Handle backslashes inside double quotes (escape special characters)
+//         if (c == '\\' && opendoublequote) {
+//             if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || (input[i + 1] == '\\' && input[i + 2] == 'n') || input[i + 1] == '\'')) {
+//                 keepNextCharSafe = true;  // Mark next character as escaped
+//                 //word += c;  // Add backslash to word
+//                 continue;
+//             } else {
+//                 word += c;  // Treat backslash as a regular character if not followed by an escape sequence
+//                 continue;
+//             }
+//         }
+
+//         // Handle backslashes inside single quotes
+//         if (c == '\\' && openquote) {
+//             word += c;  // Treat the backslash as part of the word in single quotes
+//             continue;
+//         }
+
+//         // Handle single quotes (toggle openquote)
+//         if (c == '\'' && !opendoublequote) {
+//             openquote = !openquote;
+//             continue;
+//         }
+
+//         // Handle double quotes (toggle opendoublequote)
+//         if (c == '"' && !openquote) {
+//             opendoublequote = !opendoublequote;
+//             continue;
+//         }
+
+//         // Space handling (only split if not inside quotes)
+//         if (!openquote && !opendoublequote && c == ' ') {
+//             if (!word.empty()) {
+//                 userinput.push_back(word);  // Push the word to the vector
+//                 word = "";  // Reset the word
+//             }
+//         } else {
+//             word += c;  // Add character to the current word
+//         }
+//     }
+
+//     // Add the last word to the vector if it's not empty
+//     if (!word.empty()) {
+//         userinput.push_back(word);
+//     }
+
+//     return userinput;
+// }
+
+
+
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
-    bool openquote = false;
-    bool opendoublequote = false;
-    bool keepNextCharSafe = false;
+    bool openquote = false;  // for single quote
+    bool opendoublequote = false;  // for double quote
+    bool keepNextCharSafe = false;  // for escaped characters
 
     for (size_t i = 0; i < input.length(); i++) {
         char c = input[i];
@@ -119,9 +187,8 @@ vector<string> split_sentence(string input) {
 
         // Handle backslashes inside double quotes (escape special characters)
         if (c == '\\' && opendoublequote) {
-            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || (input[i + 1] == '\\' && input[i + 2] == 'n') || input[i + 1] == '\'')) {
+            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\'')) {
                 keepNextCharSafe = true;  // Mark next character as escaped
-                //word += c;  // Add backslash to word
                 continue;
             } else {
                 word += c;  // Treat backslash as a regular character if not followed by an escape sequence
@@ -165,6 +232,7 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
 
 
 
