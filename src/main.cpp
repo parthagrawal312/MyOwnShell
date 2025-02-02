@@ -68,7 +68,7 @@ vector<string> split_sentence(string input) {
             keepNextCharSafe = true;
             continue;
         }
-        else if (c == '\\' openquote==true) {
+        else if (c == '\\' && openquote==true) {
             word += c;
             continue;
         }
