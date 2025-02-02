@@ -43,6 +43,13 @@ string get_path(string command){
 
 
 
+
+
+
+
+
+
+
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
@@ -50,36 +57,27 @@ vector<string> split_sentence(string input) {
     bool opendoublequote = false;
     bool keepNextCharSafe = false;
 
-    for (size_t i = 0; i < input.length(); i++) {
-        char c = input[i];
-
-        // Preserve escaped characters (including \")
-        if (keepNextCharSafe) {
-            word += c;  // Keep the escaped character
+    for (char c : input) {
+        if (keepNextCharSafe==true) {
+            word += c;
             keepNextCharSafe = false;
             continue;
         }
 
-        // Detect backslash for escaping
         if (c == '\\') {
             keepNextCharSafe = true;
-            word += c;  // Keep backslash in the word
+            continue;
+        } 
+        else if (c == '\'' && opendoublequote==false) {
+            openquote = !openquote;
+            continue;
+        } 
+        else if (c == '"' && openquote==false) {
+            opendoublequote = !opendoublequote;
             continue;
         }
 
-        // Remove single quotes while keeping content inside them
-        if (c == '\'' && !opendoublequote) {
-            openquote = !openquote;
-            continue;  // Skip adding the single quote to `word`
-        }
-
-        // Preserve double quotes when not inside single quotes
-        if (c == '"' && !openquote) {
-            opendoublequote = !opendoublequote;
-        }
-
-        // Space handling (only split if not inside quotes)
-        if (!openquote && !opendoublequote && c == ' ') {
+        if (openquote==false && opendoublequote==false && c == ' ') {
             if (!word.empty()) {
                 userinput.push_back(word);
                 word = "";
@@ -95,58 +93,6 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
-
-
-
-
-
-
-
-
-
-// vector<string> split_sentence(string input) {
-//     vector<string> userinput;
-//     string word = "";
-//     bool openquote = false;
-//     bool opendoublequote = false;
-//     bool keepNextCharSafe = false;
-
-//     for (char c : input) {
-//         if (keepNextCharSafe==true) {
-//             word += c;
-//             keepNextCharSafe = false;
-//             continue;
-//         }
-
-//         if (c == '\\') {
-//             keepNextCharSafe = true;
-//             continue;
-//         } 
-//         else if (c == '\'' && opendoublequote==false) {
-//             openquote = !openquote;
-//             continue;
-//         } 
-//         else if (c == '"' && openquote==false) {
-//             opendoublequote = !opendoublequote;
-//             continue;
-//         }
-
-//         if (openquote==false && opendoublequote==false && c == ' ') {
-//             if (!word.empty()) {
-//                 userinput.push_back(word);
-//                 word = "";
-//             }
-//         } else {
-//             word += c;
-//         }
-//     }
-
-//     if (!word.empty()) {
-//         userinput.push_back(word);
-//     }
-
-//     return userinput;
-// }
 
 
 
