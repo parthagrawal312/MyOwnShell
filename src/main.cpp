@@ -77,12 +77,8 @@ vector<string> split_sentence(string input) {
           continue;
         }
         else if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
-            if(!word.empty()){  // Only push non-empty words
-                userinput.emplace_back(word);
-                word = "";
-            }
-            // userinput.emplace_back(word);// If a space is found, add the word to the vector
-            // word = "";// Reset the word
+            userinput.emplace_back(word);// If a space is found, add the word to the vector
+            word = "";// Reset the word
         }
         else {
              word += c;// Append the character to the current word
