@@ -55,7 +55,7 @@ vector<string> split_sentence(string input) {
         if (keepNextCharSafe==true) {
             word += c;  // Add escaped character
             keepNextCharSafe = false;  // Reset flag
-            continue;
+            //continue;
         }
         if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
         {
