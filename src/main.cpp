@@ -40,134 +40,6 @@ string get_path(string command){
     return "";  
 }
 
-
-
-
-
-
-
-
-
-
-
-// vector<string> split_sentence(string input) {
-//     vector<string> userinput;
-//     string word = "";
-//     bool openquote = false;
-//     bool opendoublequote = false;
-//     bool keepNextCharSafe = false;
-
-//     for (char c : input) {
-//         if (keepNextCharSafe==true) {
-//             word += c;
-//             keepNextCharSafe = false;
-//             continue;
-//         }
-
-//         if (c == '\\' && openquote==false) {
-//             keepNextCharSafe = true;
-//             continue;
-//         }
-//         else if (c == '\\' && openquote==true) {
-//             word += c;
-//             continue;
-//         }
-//         else if (c == '\'' && opendoublequote==false) {
-//             openquote = !openquote;
-//             continue;
-//         } 
-//         else if (c == '"' && openquote==false) {
-//             opendoublequote = !opendoublequote;
-//             continue;
-//         }
-
-//         if (openquote==false && opendoublequote==false && c == ' ') {
-//             if (!word.empty()) {
-//                 userinput.push_back(word);
-//                 word = "";
-//             }
-//         } else {
-//             word += c;
-//         }
-//     }
-
-//     if (!word.empty()) {
-//         userinput.push_back(word);
-//     }
-
-//     return userinput;
-// }
-
-
-
-// vector<string> split_sentence(string input) {
-//     vector<string> userinput;
-//     string word = "";
-//     bool openquote = false;
-//     bool opendoublequote = false;
-//     bool keepNextCharSafe = false;
-
-//     for (size_t i = 0; i < input.length(); i++) {
-//         char c = input[i];
-
-//         // Handle escape sequences
-//         if (keepNextCharSafe==true) {
-//             word += c;  // Add the escaped character to the word
-//             keepNextCharSafe = false;  // Reset the escape flag
-//             continue;
-//         }
-
-//         // Handle backslashes inside double quotes (escape special characters)
-//         if (c == '\\' && opendoublequote) {
-//             if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || (input[i + 1] == '\\' && input[i + 2] == 'n') || input[i + 1] == '\'')) {
-//                 keepNextCharSafe = true;  // Mark next character as escaped
-//                 //word += c;  // Add backslash to word
-//                 continue;
-//             } else {
-//                 word += c;  // Treat backslash as a regular character if not followed by an escape sequence
-//                 continue;
-//             }
-//         }
-
-//         // Handle backslashes inside single quotes
-//         if (c == '\\' && openquote) {
-//             word += c;  // Treat the backslash as part of the word in single quotes
-//             continue;
-//         }
-
-//         // Handle single quotes (toggle openquote)
-//         if (c == '\'' && !opendoublequote) {
-//             openquote = !openquote;
-//             continue;
-//         }
-
-//         // Handle double quotes (toggle opendoublequote)
-//         if (c == '"' && !openquote) {
-//             opendoublequote = !opendoublequote;
-//             continue;
-//         }
-
-//         // Space handling (only split if not inside quotes)
-//         if (!openquote && !opendoublequote && c == ' ') {
-//             if (!word.empty()) {
-//                 userinput.push_back(word);  // Push the word to the vector
-//                 word = "";  // Reset the word
-//             }
-//         } else {
-//             word += c;  // Add character to the current word
-//         }
-//     }
-
-//     // Add the last word to the vector if it's not empty
-//     if (!word.empty()) {
-//         userinput.push_back(word);
-//     }
-
-//     return userinput;
-// }
-
-
-
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
@@ -178,7 +50,7 @@ vector<string> split_sentence(string input) {
     for (size_t i = 0; i < input.length(); i++) {
         char c = input[i];
 
-        // Handle escape sequences (escape characters like \')
+        // Handle escape sequences
         if (keepNextCharSafe) {
             word += c;  // Add the escaped character to the word
             keepNextCharSafe = false;  // Reset the escape flag
@@ -187,7 +59,7 @@ vector<string> split_sentence(string input) {
 
         // Handle backslashes inside double quotes (escape special characters)
         if (c == '\\' && opendoublequote) {
-            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\'')) {
+            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '`' || input[i + 1] == '"')) {
                 keepNextCharSafe = true;  // Mark next character as escaped
                 continue;
             } else {
@@ -233,14 +105,6 @@ vector<string> split_sentence(string input) {
     return userinput;
 }
 
-
-
-
-
-
-
-
-
 void commandChecker(string s){
   vector<string> builtInCommand = {"exit","echo","type","pwd"};
   int flag=0;
@@ -278,6 +142,7 @@ int main() {
     getline(cin, input);
     
     vector<string> userinput = split_sentence(input);
+    if(userinput.empty()) continue;
     if(userinput[0]=="exit"){
         return 0;
     }
@@ -297,42 +162,63 @@ int main() {
         cout<<endl;
     }
     else if(userinput[0]=="type"){
+      if(userinput.size() < 2) {
+          cout << "type: missing argument" << endl;
+          continue;
+      }
       commandChecker(userinput[1]);
     }
     else if(userinput[0]=="pwd"){
       currentPathFinder();
     }
     else if(userinput[0]=="cd"){
-      if (userinput[1] == "~"){
-        std::filesystem::current_path(getenv("HOME"));
+      string target_dir;
+      if (userinput.size() < 2) {
+          target_dir = getenv("HOME");
+      } else {
+          target_dir = userinput[1];
+          if (target_dir == "~") {
+              target_dir = getenv("HOME");
+          }
       }
-      else  if (std::filesystem::exists(userinput[1])){
-          std::filesystem::current_path(userinput[1]);
-      } 
-      else cout << userinput[1] << ": No such file or directory" <<endl;
+      error_code ec;
+      filesystem::current_path(target_dir, ec);
+      if (ec) {
+          cout << "cd: " << target_dir << ": " << ec.message() << endl;
+      }
     }
     else{
       string path_string = getenv("PATH");
-      //cout<<"path_string is: "<<path_string<<endl;
       vector<string> path = split_string(path_string, ':');
       string filepath;
-     // cout<<"filepath is: "<<filepath<<endl;
+      bool found = false;
       for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
-      //  cout<<"filepath is : "<<filepath<<endl;
-        ifstream file(filepath);
-        if(file.good()){
-          string command =  input;  // "exec " + path[i] + '/' +
-      //    cout<<"command is: "<<command<<endl;
-          system(command.c_str());
+        if(filesystem::exists(filepath) && filesystem::is_regular_file(filepath)){
+          // Execute the command using the absolute path
+          string command;
+          for (const auto& arg : userinput) {
+              if (arg.find(' ') != string::npos) {
+                  command += "'" + arg + "' ";
+              } else {
+                  command += arg + " ";
+              }
+          }
+          // Remove trailing space
+          if (!command.empty()) {
+              command.pop_back();
+          }
+          int result = system(command.c_str());
+          if (result != 0) {
+              cerr << "Command execution failed with code " << result << endl;
+          }
+          found = true;
           break;
         } 
-        else if(i == path.size() - 1){
-       //   cout<<"userinput[0] is: "<<userinput[0]<<endl;
-           cout << userinput[0] << ": not found\n";
-        }
+      }
+      if (!found) {
+          cout << userinput[0] << ": not found" << endl;
       }
     }
   }
-  
 }
