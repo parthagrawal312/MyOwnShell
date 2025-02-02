@@ -291,7 +291,12 @@ int main() {
     string input;
     getline(cin, input);
     
+
+    
+    
     vector<string> userinput = split_sentence(input);
+
+    
     if(userinput[0]=="exit"){
         return 0;
     }
@@ -327,17 +332,17 @@ int main() {
     }
     else{
       string path_string = getenv("PATH");
-      //cout<<"path_string is: "<<path_string<<endl;
+     
       vector<string> path = split_string(path_string, ':');
       string filepath;
-     // cout<<"filepath is: "<<filepath<<endl;
+   
       for(int i = 0; i < path.size(); i++){
         filepath = path[i] + '/' + userinput[0];
-      //  cout<<"filepath is : "<<filepath<<endl;
+ 
         ifstream file(filepath);
         if(file.good()){
           string command =  input;  // "exec " + path[i] + '/' +
-      //    cout<<"command is: "<<command<<endl;
+
           system(command.c_str());
           break;
         } 
