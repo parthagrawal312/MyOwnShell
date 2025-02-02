@@ -43,6 +43,10 @@ string get_path(string command){
 
 
 
+
+
+
+
 vector<string> split_sentence(string input) {
       vector<string> userinput;
       string word = "";
@@ -52,27 +56,27 @@ vector<string> split_sentence(string input) {
       bool opendoublequote=false;
       bool keepNextCharSafe=false;
       for (char c : input) {
-        if (keepNextCharSafe==true) {
-            word += c;  // Add escaped character
-            //keepNextCharSafe = false;  // Reset flag
-            //continue;
-        }
-        if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
-        {
-          openquote=!openquote;
-          continue;
-        }
-        if(c=='\"' && keepNextCharSafe==false)
-        {
-          opendoublequote=!opendoublequote;
-          continue;
-        }
         if(c=='\\')
         {
           keepNextCharSafe==true;
           continue;
         }
-        if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
+        else if (keepNextCharSafe==true) {
+            word += c;  // Add escaped character
+            keepNextCharSafe = false;  // Reset flag
+            continue;
+        }
+        else if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
+        {
+          openquote=!openquote;
+          continue;
+        }
+        else if(c=='\"' && keepNextCharSafe==false)
+        {
+          opendoublequote=!opendoublequote;
+          continue;
+        }
+        else if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
@@ -85,6 +89,56 @@ vector<string> split_sentence(string input) {
       } 
       return userinput;// Return the vector containing words
 }
+
+
+
+
+
+
+
+
+// vector<string> split_sentence(string input) {
+//       vector<string> userinput;
+//       string word = "";
+//       string lastinput="";
+//       char whichquote;
+//       bool openquote=false;
+//       bool opendoublequote=false;
+//       bool keepNextCharSafe=false;
+//       for (char c : input) {
+//         if (keepNextCharSafe==true) {
+//             word += c;  // Add escaped character
+//             keepNextCharSafe = false;  // Reset flag
+//             //continue;
+//         }
+//         if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
+//         {
+//           openquote=!openquote;
+//           continue;
+//         }
+//         if(c=='\"' && keepNextCharSafe==false)
+//         {
+//           opendoublequote=!opendoublequote;
+//           continue;
+//         }
+//         if(c=='\\')
+//         {
+//           keepNextCharSafe==true;
+//           continue;
+//         }
+//         if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
+//             userinput.emplace_back(word);// If a space is found, add the word to the vector
+//             word = "";// Reset the word
+//         }
+//         else {
+//              word += c;// Append the character to the current word
+//          }
+//       }
+//       if (!word.empty()) { // Add the last word to the vector
+//         userinput.emplace_back(word);
+//       } 
+//       return userinput;// Return the vector containing words
+// }
 
 void commandChecker(string s){
   vector<string> builtInCommand = {"exit","echo","type","pwd"};
