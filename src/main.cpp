@@ -45,7 +45,7 @@ string get_path(string command){
   string path;
     while (!ss.eof())
     {
-      getline(pathStream, path, ':');
+      getline(ss , path, ':');
       string fullPath = path + "/" + newCommand;
       if (filesystem::exists(fullPath)){
         return path + "/" + chFront + newCommand + chBack;
