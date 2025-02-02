@@ -66,7 +66,7 @@ vector<string> split_sentence(string input) {
             keepNextCharSafe = false;  // Reset flag
             continue;
         }
-        if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
+        else if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
         {
           openquote=!openquote;
           continue;
@@ -76,7 +76,7 @@ vector<string> split_sentence(string input) {
           opendoublequote=!opendoublequote;
           continue;
         }
-        else if (openquote==false && opendoublequote==false && c == ' ' && keepNextCharSafe==false) {
+        if (openquote==false && opendoublequote==false && c == ' ' /*&& keepNextCharSafe==false*/) {
             userinput.emplace_back(word);// If a space is found, add the word to the vector
             word = "";// Reset the word
         }
@@ -186,12 +186,12 @@ int main() {
         bool sig=0;
         for(int i=1; i<userinput.size(); i++)
         {
-          // if(userinput[i]==""){
-          //   continue;
-          // }
-          // else{
+          if(userinput[i]==' '){
+            continue;
+          }
+          else{
           cout<<userinput[i]<<" ";
-          // }
+         }
         }
         cout<<endl;
     }
