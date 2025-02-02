@@ -55,30 +55,35 @@ vector<string> split_sentence(string input) {
 
         // Handle escaped characters
         if (keepNextCharSafe) {
-            word += c; // Preserve escaped character
+            // If backslash was before a space, treat it as a space
+            if (c == ' ') {
+                word += ' ';
+            } else {
+                word += c; // Otherwise, keep the escaped character
+            }
             keepNextCharSafe = false;
             continue;
         }
 
+        // Detect backslash for escaping
         if (c == '\\') {
-            keepNextCharSafe = true; // Next character should be treated as literal
-            word += c;  // Keep backslash for correct output
-            continue;
+            keepNextCharSafe = true;
+            continue; // Do NOT add backslash to the word
         }
 
-        // Remove single quotes but keep the content inside them
+        // Remove single quotes while keeping content inside them
         if (c == '\'' && !opendoublequote) {
             openquote = !openquote;
             continue;  // Skip adding the quote to `word`
         }
 
-        // Preserve double quotes (for cases like "script\"world")
+        // Handle double quotes correctly
         if (c == '"' && !openquote) {
             opendoublequote = !opendoublequote;
             continue;  // Skip adding the double quote
         }
 
-        // Space handling
+        // Space handling (only split if not inside quotes)
         if (!openquote && !opendoublequote && c == ' ') {
             if (!word.empty()) {
                 userinput.push_back(word);
@@ -95,6 +100,7 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
 
 
 
