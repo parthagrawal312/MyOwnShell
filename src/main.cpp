@@ -62,22 +62,20 @@ vector<string> split_sentence(string input) {
 
         if (c == '\\') {
             keepNextCharSafe = true; // Next character should be treated as literal
-            word += c;  // Keep backslash for proper output
+            word += c;  // Keep backslash for correct output
             continue;
         }
 
-        // Handle single quotes
+        // Remove single quotes but keep the content inside them
         if (c == '\'' && !opendoublequote) {
             openquote = !openquote;
-            word += c;  // Preserve the single quote in the output
-            continue;
+            continue;  // Skip adding the quote to `word`
         }
 
-        // Handle double quotes
+        // Preserve double quotes (for cases like "script\"world")
         if (c == '"' && !openquote) {
             opendoublequote = !opendoublequote;
-            word += c;  // Preserve the double quote in the output
-            continue;
+            continue;  // Skip adding the double quote
         }
 
         // Space handling
@@ -97,6 +95,7 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
 
 
 
