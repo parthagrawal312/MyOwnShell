@@ -119,7 +119,7 @@ vector<string> split_sentence(string input) {
 
         // Handle backslashes inside double quotes (escape special characters)
         if (c == '\\' && opendoublequote) {
-            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || input[i + 1] == '\n' || input[i + 1] == '\'')) {
+            if (i + 1 < input.length() && (input[i + 1] == '\\' || input[i + 1] == '$' || input[i + 1] == '"' || (input[i + 1] == '\\' && input[i + 2] == 'n') || input[i + 1] == '\'')) {
                 keepNextCharSafe = true;  // Mark next character as escaped
                 word += c;  // Add backslash to word
                 continue;
