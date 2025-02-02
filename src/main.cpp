@@ -43,56 +43,6 @@ string get_path(string command){
 
 
 
-
-
-
-
-vector<string> supersplit_sentence(string input) {
-      vector<string> userinput;
-      string word = "";
-      string lastinput="";
-      char whichquote;
-      bool openquote=false;
-      bool opendoublequote=false;
-      bool keepNextCharSafe=false;
-      for (char c : input) {
-        if(c=='\\')
-        {
-          keepNextCharSafe=true;
-          continue;
-        }
-        else if (keepNextCharSafe==true) {
-            word += c;  // Add escaped character
-            keepNextCharSafe = false;  // Reset flag
-            continue;
-        }
-        else if(c=='\'' && keepNextCharSafe==false)// Iterate through each character in the user input sentence
-        {
-          openquote=!openquote;
-          continue;
-        }
-        else if(c=='\"' && keepNextCharSafe==false)
-        {
-          opendoublequote=!opendoublequote;
-          continue;
-        }
-        if (openquote==false && opendoublequote==false && c == ' ' /*&& keepNextCharSafe==false*/) {
-            userinput.emplace_back(word);// If a space is found, add the word to the vector
-            word = "";// Reset the word
-        }
-        else {
-             word += c;// Append the character to the current word
-         }
-      }
-      if (!word.empty()) { // Add the last word to the vector
-        userinput.emplace_back(word);
-      } 
-      return userinput;// Return the vector containing words
-}
-
-
-
-
 vector<string> split_sentence(string input) {
     vector<string> userinput;
     string word = "";
@@ -100,27 +50,38 @@ vector<string> split_sentence(string input) {
     bool opendoublequote = false;
     bool keepNextCharSafe = false;
 
-    for (char c : input) {
-        if (keepNextCharSafe==true) {
-            word += c;
+    for (size_t i = 0; i < input.length(); i++) {
+        char c = input[i];
+
+        // Handle escaped characters
+        if (keepNextCharSafe) {
+            word += c; // Preserve escaped character
             keepNextCharSafe = false;
             continue;
         }
 
         if (c == '\\') {
-            keepNextCharSafe = true;
-            continue;
-        } 
-        else if (c == '\'' && opendoublequote==false) {
-            openquote = !openquote;
-            continue;
-        } 
-        else if (c == '"' && openquote==false) {
-            opendoublequote = !opendoublequote;
+            keepNextCharSafe = true; // Next character should be treated as literal
+            word += c;  // Keep backslash for proper output
             continue;
         }
 
-        if (openquote==false && opendoublequote==false && c == ' ') {
+        // Handle single quotes
+        if (c == '\'' && !opendoublequote) {
+            openquote = !openquote;
+            word += c;  // Preserve the single quote in the output
+            continue;
+        }
+
+        // Handle double quotes
+        if (c == '"' && !openquote) {
+            opendoublequote = !opendoublequote;
+            word += c;  // Preserve the double quote in the output
+            continue;
+        }
+
+        // Space handling
+        if (!openquote && !opendoublequote && c == ' ') {
             if (!word.empty()) {
                 userinput.push_back(word);
                 word = "";
@@ -136,6 +97,55 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
+
+
+
+
+
+// vector<string> split_sentence(string input) {
+//     vector<string> userinput;
+//     string word = "";
+//     bool openquote = false;
+//     bool opendoublequote = false;
+//     bool keepNextCharSafe = false;
+
+//     for (char c : input) {
+//         if (keepNextCharSafe==true) {
+//             word += c;
+//             keepNextCharSafe = false;
+//             continue;
+//         }
+
+//         if (c == '\\') {
+//             keepNextCharSafe = true;
+//             continue;
+//         } 
+//         else if (c == '\'' && opendoublequote==false) {
+//             openquote = !openquote;
+//             continue;
+//         } 
+//         else if (c == '"' && openquote==false) {
+//             opendoublequote = !opendoublequote;
+//             continue;
+//         }
+
+//         if (openquote==false && opendoublequote==false && c == ' ') {
+//             if (!word.empty()) {
+//                 userinput.push_back(word);
+//                 word = "";
+//             }
+//         } else {
+//             word += c;
+//         }
+//     }
+
+//     if (!word.empty()) {
+//         userinput.push_back(word);
+//     }
+
+//     return userinput;
+// }
 
 
 
