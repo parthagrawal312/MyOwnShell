@@ -53,14 +53,9 @@ vector<string> split_sentence(string input) {
     for (size_t i = 0; i < input.length(); i++) {
         char c = input[i];
 
-        // Handle escaped characters
+        // Preserve escaped characters (including \")
         if (keepNextCharSafe) {
-            // If backslash was before a space, treat it as a space
-            if (c == ' ') {
-                word += ' ';
-            } else {
-                word += c; // Otherwise, keep the escaped character
-            }
+            word += c;  // Keep the escaped character
             keepNextCharSafe = false;
             continue;
         }
@@ -68,19 +63,19 @@ vector<string> split_sentence(string input) {
         // Detect backslash for escaping
         if (c == '\\') {
             keepNextCharSafe = true;
-            continue; // Do NOT add backslash to the word
+            word += c;  // Keep backslash in the word
+            continue;
         }
 
         // Remove single quotes while keeping content inside them
         if (c == '\'' && !opendoublequote) {
             openquote = !openquote;
-            continue;  // Skip adding the quote to `word`
+            continue;  // Skip adding the single quote to `word`
         }
 
-        // Handle double quotes correctly
+        // Preserve double quotes when not inside single quotes
         if (c == '"' && !openquote) {
             opendoublequote = !opendoublequote;
-            continue;  // Skip adding the double quote
         }
 
         // Space handling (only split if not inside quotes)
@@ -100,6 +95,7 @@ vector<string> split_sentence(string input) {
 
     return userinput;
 }
+
 
 
 
