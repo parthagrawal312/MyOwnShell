@@ -159,47 +159,48 @@ int main() {
          }
         }
         cout<<endl;
-    }
-    else if(userinput[0]=="type"){
-      if(userinput.size() < 2) {
+      }
+      else if(userinput[0]=="type"){
+        if(userinput.size() < 2) {
           cout << "type: missing argument" << endl;
           continue;
-      }
+        }
       commandChecker(userinput[1]);
-    }
-    else if(userinput[0]=="pwd"){
-      currentPathFinder();
-    }
-    else if(userinput[0]=="cd"){
-      string target_dir;
-      if (userinput.size() < 2) {
+      }
+      else if(userinput[0]=="pwd"){
+        currentPathFinder();
+      }
+      else if(userinput[0]=="cd"){
+        string target_dir;
+        if (userinput.size() < 2) {
           target_dir = getenv("HOME");
-      } else {
+        } 
+        else {
           target_dir = userinput[1];
           if (target_dir == "~") {
               target_dir = getenv("HOME");
           }
-      }
+        }
       error_code ec;
       filesystem::current_path(target_dir, ec);
       if (ec) {
           cout << "cd: " << target_dir << ": " << ec.message() << endl;
       }
-    }
-else {
-  string path_string = getenv("PATH");
-  vector<string> path = split_string(path_string, ':');
-  string filepath;
-  bool found = false;
-  for(int i = 0; i < path.size(); i++){
-    filepath = path[i] + '/' + userinput[0];
-    if(filesystem::exists(filepath) && filesystem::is_regular_file(filepath)){
-      // Build the command with proper quoting
-      string command;
-      for (const auto& arg : userinput) {
+      }
+  else{
+    string path_string = getenv("PATH");
+    vector<string> path = split_string(path_string, ':');
+    string filepath;
+    bool found = false;
+    for(int i = 0; i < path.size(); i++){
+      filepath = path[i] + '/' + userinput[0];
+      if(filesystem::exists(filepath) && filesystem::is_regular_file(filepath)){
+        // Build the command with proper quoting
+        string command;
+        for (const auto& arg : userinput){
           string escaped_arg;
           escaped_arg += "'"; // Start single quote
-          for (char c : arg) {
+          for (char c : arg){
               if (c == '\'') {
                   // Replace ' with '\''
                   escaped_arg += "'\\''";
@@ -209,46 +210,21 @@ else {
           }
           escaped_arg += "'"; // End single quote
           command += escaped_arg + " ";
-      }
-      if (!command.empty()) {
+        }
+        if (!command.empty()) {
           command.pop_back(); // Remove trailing space
-      }
-      int result = system(command.c_str());
-      if (result != 0) {
-          cerr << "Command execution failed with code " << result << endl;
-      }
-      found = true;
-      break;
-    } 
-  }
-  if (!found) {
+        }
+        int result = system(command.c_str());
+        if (result != 0) {
+         cerr << "Command execution failed with code " << result << endl;
+        }
+        found = true;
+        break;
+      } 
+    }
+    if (!found) {
       cout << userinput[0] << ": not found" << endl;
+    }
+  }
   }
 }
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// In the main function's else block for executing commands:
