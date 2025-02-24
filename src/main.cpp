@@ -138,6 +138,8 @@ int main() {
         vector<string> args;
         string output_file;
         string error_file;
+        bool output_append = false;
+        bool error_append = false;
 
         for (size_t i = 0; i < userinput.size();) {
             if (userinput[i] == ">" || userinput[i] == "1>") {
@@ -146,9 +148,25 @@ int main() {
                     args.clear();
                     output_file.clear();
                     error_file.clear();
+                    output_append = false;
+                    error_append = false;
                     break;
                 }
                 output_file = userinput[i + 1];
+                output_append = false;
+                i += 2;
+            } else if (userinput[i] == ">>" || userinput[i] == "1>>") {
+                if (i + 1 >= userinput.size()) {
+                    cerr << "Syntax error: no output file provided for redirection." << endl;
+                    args.clear();
+                    output_file.clear();
+                    error_file.clear();
+                    output_append = false;
+                    error_append = false;
+                    break;
+                }
+                output_file = userinput[i + 1];
+                output_append = true;
                 i += 2;
             } else if (userinput[i] == "2>") {
                 if (i + 1 >= userinput.size()) {
@@ -156,9 +174,25 @@ int main() {
                     args.clear();
                     output_file.clear();
                     error_file.clear();
+                    output_append = false;
+                    error_append = false;
                     break;
                 }
                 error_file = userinput[i + 1];
+                error_append = false;
+                i += 2;
+            } else if (userinput[i] == "2>>") {
+                if (i + 1 >= userinput.size()) {
+                    cerr << "Syntax error: no error file provided for redirection." << endl;
+                    args.clear();
+                    output_file.clear();
+                    error_file.clear();
+                    output_append = false;
+                    error_append = false;
+                    break;
+                }
+                error_file = userinput[i + 1];
+                error_append = true;
                 i += 2;
             } else {
                 args.push_back(userinput[i]);
@@ -184,7 +218,13 @@ int main() {
                     perror("dup");
                     redirect_failed = true;
                 } else {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags = O_WRONLY | O_CREAT;
+                    if (output_append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open");
                         redirect_failed = true;
@@ -207,7 +247,13 @@ int main() {
                     perror("dup stderr");
                     redirect_failed = true;
                 } else {
-                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags_err = O_WRONLY | O_CREAT;
+                    if (error_append) {
+                        flags_err |= O_APPEND;
+                    } else {
+                        flags_err |= O_TRUNC;
+                    }
+                    int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
                         redirect_failed = true;
@@ -263,7 +309,13 @@ int main() {
                     perror("dup stdout");
                     redirect_failed = true;
                 } else {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags = O_WRONLY | O_CREAT;
+                    if (output_append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
                         redirect_failed = true;
@@ -286,7 +338,13 @@ int main() {
                     perror("dup stderr");
                     redirect_failed = true;
                 } else {
-                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags_err = O_WRONLY | O_CREAT;
+                    if (error_append) {
+                        flags_err |= O_APPEND;
+                    } else {
+                        flags_err |= O_TRUNC;
+                    }
+                    int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
                         redirect_failed = true;
@@ -340,7 +398,13 @@ int main() {
                     perror("dup stdout");
                     redirect_failed = true;
                 } else {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags = O_WRONLY | O_CREAT;
+                    if (output_append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
                         redirect_failed = true;
@@ -363,7 +427,13 @@ int main() {
                     perror("dup stderr");
                     redirect_failed = true;
                 } else {
-                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags_err = O_WRONLY | O_CREAT;
+                    if (error_append) {
+                        flags_err |= O_APPEND;
+                    } else {
+                        flags_err |= O_TRUNC;
+                    }
+                    int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
                         redirect_failed = true;
@@ -413,7 +483,13 @@ int main() {
                     perror("dup stdout");
                     redirect_failed = true;
                 } else {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags = O_WRONLY | O_CREAT;
+                    if (output_append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
                         redirect_failed = true;
@@ -436,7 +512,13 @@ int main() {
                     perror("dup stderr");
                     redirect_failed = true;
                 } else {
-                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags_err = O_WRONLY | O_CREAT;
+                    if (error_append) {
+                        flags_err |= O_APPEND;
+                    } else {
+                        flags_err |= O_TRUNC;
+                    }
+                    int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
                         redirect_failed = true;
@@ -519,8 +601,15 @@ int main() {
                 perror("fork");
                 continue;
             } else if (pid == 0) {
+                // Redirect stdout
                 if (!output_file.empty()) {
-                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags = O_WRONLY | O_CREAT;
+                    if (output_append) {
+                        flags |= O_APPEND;
+                    } else {
+                        flags |= O_TRUNC;
+                    }
+                    int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open");
                         exit(EXIT_FAILURE);
@@ -533,8 +622,15 @@ int main() {
                     close(fd);
                 }
 
+                // Redirect stderr
                 if (!error_file.empty()) {
-                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int flags_err = O_WRONLY | O_CREAT;
+                    if (error_append) {
+                        flags_err |= O_APPEND;
+                    } else {
+                        flags_err |= O_TRUNC;
+                    }
+                    int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open");
                         exit(EXIT_FAILURE);
