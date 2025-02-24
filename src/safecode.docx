@@ -14,28 +14,30 @@ void currentPathFinder(){
 }
 
 vector<string> split_string(const string &s, char delimiter){
-  stringstream ss(s);
-  vector<string> return_vect;
-  string token;
-  while(getline(ss, token, delimiter)){
-    return_vect.push_back(token);
+    stringstream ss(s);
+    vector<string> return_vect;
+    string token;
+    while(getline(ss, token, delimiter)){
+      return_vect.push_back(token);
+    }
+    return return_vect;
   }
-  return return_vect;
-}
 
 
 string get_path(string command){
   string path_env = getenv("PATH");
   stringstream ss(path_env);
   string path;
-  while(!ss.eof()){
-    getline(ss, path, ':');
-    string abs_path = path + '/' + command;
-    if(filesystem::exists(abs_path)){
-      return abs_path;
+   while(!ss.eof()){
+      getline(ss, path, ':');
+
+        string abs_path = path + '/' + command;
+
+        if(filesystem::exists(abs_path)){
+            return abs_path;
+        }
     }
-  }
-  return "";  
+    return "";  
 }
 
 vector<string> split_sentence(string input) {
@@ -85,12 +87,12 @@ vector<string> split_sentence(string input) {
         }
 
         if (!openquote && !opendoublequote && c == ' ') {
-          if (!word.empty()) {
-            userinput.push_back(word);
-            word = "";
-          }
+            if (!word.empty()) {
+                userinput.push_back(word);
+                word = "";
+            }
         } else {
-          word += c;
+            word += c;
         }
     }
 
