@@ -118,7 +118,7 @@ vector<string> split_sentence(string input) {
 }
 
 void commandChecker(string s) {
-    vector<string> builtInCommand = {"exit", "echo", "type", "pwd"};
+    vector<string> builtInCommand = {"exit", "echo", "type", "pwd", "cd"};
     int flag = 0;
     for (size_t i = 0; i < builtInCommand.size(); i++) {
         if (s == builtInCommand[i]) {
@@ -158,7 +158,7 @@ int main() {
                 string current_command = input_buffer.substr(0, first_space);
 
                 vector<string> matches;
-                vector<string> builtins = {"echo", "exit"};
+                vector<string> builtins = {"echo", "exit", "type", "pwd", "cd"};
                 for (const auto& cmd : builtins) {
                     if (cmd.find(current_command) == 0) {
                         matches.push_back(cmd);
@@ -178,6 +178,8 @@ int main() {
                     input_buffer = new_buffer;
 
                     cout << '\r' << "$ " << input_buffer << flush;
+                } else {
+                    cout << '\a' << flush;
                 }
             } else if (c == 127) { // Backspace
                 if (!input_buffer.empty()) {
