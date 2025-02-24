@@ -7,9 +7,24 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <termios.h>
 using namespace std;
 
 extern char **environ;
+
+struct termios orig_termios;
+
+void disable_raw_mode() {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+}
+
+void enable_raw_mode() {
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    atexit(disable_raw_mode);
+    struct termios raw = orig_termios;
+    raw.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
 
 void currentPathFinder() {
     string cwd = filesystem::current_path().string();
@@ -105,7 +120,7 @@ vector<string> split_sentence(string input) {
 void commandChecker(string s) {
     vector<string> builtInCommand = {"exit", "echo", "type", "pwd"};
     int flag = 0;
-    for (int i = 0; i < builtInCommand.size(); i++) {
+    for (size_t i = 0; i < builtInCommand.size(); i++) {
         if (s == builtInCommand[i]) {
             flag = 1;
             break;
@@ -127,12 +142,56 @@ int main() {
     cout << unitbuf;
     cerr << unitbuf;
 
-    while (true) {
-        cout << "$ ";
-        string input;
-        getline(cin, input);
+    enable_raw_mode();
 
-        vector<string> userinput = split_sentence(input);
+    while (true) {
+        cout << "$ " << flush;
+
+        string input_buffer;
+        char c;
+        while (read(STDIN_FILENO, &c, 1) == 1) {
+            if (c == '\n') {
+                cout << endl;
+                break;
+            } else if (c == '\t') {
+                size_t first_space = input_buffer.find(' ');
+                string current_command = input_buffer.substr(0, first_space);
+
+                vector<string> matches;
+                vector<string> builtins = {"echo", "exit"};
+                for (const auto& cmd : builtins) {
+                    if (cmd.find(current_command) == 0) {
+                        matches.push_back(cmd);
+                    }
+                }
+
+                if (matches.size() == 1) {
+                    string completed = matches[0];
+                    string new_buffer;
+
+                    if (first_space != string::npos) {
+                        new_buffer = completed + " " + input_buffer.substr(first_space + 1);
+                    } else {
+                        new_buffer = completed + " ";
+                    }
+
+                    input_buffer = new_buffer;
+
+                    cout << '\r' << "$ " << input_buffer << flush;
+                }
+            } else if (c == 127) { // Backspace
+                if (!input_buffer.empty()) {
+                    input_buffer.pop_back();
+                    cout << '\r' << "$ " << input_buffer << ' ';
+                    cout << '\r' << "$ " << input_buffer << flush;
+                }
+            } else {
+                input_buffer += c;
+                cout << c << flush;
+            }
+        }
+
+        vector<string> userinput = split_sentence(input_buffer);
         if (userinput.empty()) continue;
 
         vector<string> args;
@@ -211,7 +270,6 @@ int main() {
             int saved_stderr = -1;
             bool redirect_failed = false;
 
-            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
@@ -240,7 +298,6 @@ int main() {
                 }
             }
 
-            // Redirect stderr
             if (!error_file.empty() && !redirect_failed) {
                 saved_stderr = dup(STDERR_FILENO);
                 if (saved_stderr == -1) {
@@ -302,7 +359,6 @@ int main() {
             int saved_stderr = -1;
             bool redirect_failed = false;
 
-            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
@@ -331,7 +387,6 @@ int main() {
                 }
             }
 
-            // Redirect stderr
             if (!error_file.empty() && !redirect_failed) {
                 saved_stderr = dup(STDERR_FILENO);
                 if (saved_stderr == -1) {
@@ -391,7 +446,6 @@ int main() {
             int saved_stderr = -1;
             bool redirect_failed = false;
 
-            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
@@ -420,7 +474,6 @@ int main() {
                 }
             }
 
-            // Redirect stderr
             if (!error_file.empty() && !redirect_failed) {
                 saved_stderr = dup(STDERR_FILENO);
                 if (saved_stderr == -1) {
@@ -476,7 +529,6 @@ int main() {
             int saved_stderr = -1;
             bool redirect_failed = false;
 
-            // Redirect stdout (though cd doesn't output to stdout)
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
@@ -505,7 +557,6 @@ int main() {
                 }
             }
 
-            // Redirect stderr
             if (!error_file.empty() && !redirect_failed) {
                 saved_stderr = dup(STDERR_FILENO);
                 if (saved_stderr == -1) {
@@ -601,7 +652,6 @@ int main() {
                 perror("fork");
                 continue;
             } else if (pid == 0) {
-                // Redirect stdout
                 if (!output_file.empty()) {
                     int flags = O_WRONLY | O_CREAT;
                     if (output_append) {
@@ -622,7 +672,6 @@ int main() {
                     close(fd);
                 }
 
-                // Redirect stderr
                 if (!error_file.empty()) {
                     int flags_err = O_WRONLY | O_CREAT;
                     if (error_append) {
@@ -658,4 +707,6 @@ int main() {
             }
         }
     }
+
+    return 0;
 }
