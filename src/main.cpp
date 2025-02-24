@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <algorithm>
 using namespace std;
 
 extern char **environ;
@@ -150,11 +151,14 @@ int main() {
 
         string input_buffer;
         char c;
+        int tab_press_count = 0;
+
         while (read(STDIN_FILENO, &c, 1) == 1) {
             if (c == '\n') {
                 cout << endl;
                 break;
             } else if (c == '\t') {
+                tab_press_count++;
                 size_t first_space = input_buffer.find(' ');
                 string current_command = input_buffer.substr(0, first_space);
 
@@ -167,20 +171,37 @@ int main() {
                     }
                 }
 
-                if (builtin_matches.size() == 1) {
-                    string completed = builtin_matches[0];
-                    string new_buffer;
+                if (!builtin_matches.empty()) {
+                    if (builtin_matches.size() == 1) {
+                        string completed = builtin_matches[0];
+                        string new_buffer;
 
-                    if (first_space != string::npos) {
-                        new_buffer = completed + " " + input_buffer.substr(first_space + 1);
+                        if (first_space != string::npos) {
+                            new_buffer = completed + " " + input_buffer.substr(first_space + 1);
+                        } else {
+                            new_buffer = completed + " ";
+                        }
+
+                        input_buffer = new_buffer;
+
+                        cout << '\r' << "$ " << input_buffer << flush;
+                        tab_press_count = 0;
                     } else {
-                        new_buffer = completed + " ";
+                        sort(builtin_matches.begin(), builtin_matches.end());
+                        if (tab_press_count == 1) {
+                            cout << '\a' << flush;
+                        } else if (tab_press_count >= 2) {
+                            for (size_t i = 0; i < builtin_matches.size(); ++i) {
+                                if (i > 0) {
+                                    cout << "  ";
+                                }
+                                cout << builtin_matches[i];
+                            }
+                            cout << '\n' << "$ " << input_buffer << flush;
+                            tab_press_count = 0;
+                        }
                     }
-
-                    input_buffer = new_buffer;
-
-                    cout << '\r' << "$ " << input_buffer << flush;
-                } else if (builtin_matches.empty()) {
+                } else {
                     vector<string> external_matches;
                     string path_env = getenv("PATH");
                     vector<string> path_dirs = split_string(path_env, ':');
@@ -206,19 +227,17 @@ int main() {
                             }
 
                             string filename = entry.path().filename().string();
-                            if (filename.find(current_command) != 0) {
-                                continue;
-                            }
-
-                            bool exists = false;
-                            for (const auto& ext : external_matches) {
-                                if (ext == filename) {
-                                    exists = true;
-                                    break;
+                            if (filename.find(current_command) == 0) {
+                                bool exists = false;
+                                for (const auto& ext : external_matches) {
+                                    if (ext == filename) {
+                                        exists = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!exists) {
-                                external_matches.push_back(filename);
+                                if (!exists) {
+                                    external_matches.push_back(filename);
+                                }
                             }
                         }
                     }
@@ -236,19 +255,35 @@ int main() {
                         input_buffer = new_buffer;
 
                         cout << '\r' << "$ " << input_buffer << flush;
+                        tab_press_count = 0;
+                    } else if (external_matches.size() > 1) {
+                        sort(external_matches.begin(), external_matches.end());
+                        if (tab_press_count == 1) {
+                            cout << '\a' << flush;
+                        } else if (tab_press_count >= 2) {
+                            for (size_t i = 0; i < external_matches.size(); ++i) {
+                                if (i > 0) {
+                                    cout << "  ";
+                                }
+                                cout << external_matches[i];
+                            }
+                            cout << '\n' << "$ " << input_buffer << flush;
+                            tab_press_count = 0;
+                        }
                     } else {
                         cout << '\a' << flush;
+                        tab_press_count = 0;
                     }
-                } else {
-                    cout << '\a' << flush;
                 }
             } else if (c == 127) { // Backspace
+                tab_press_count = 0;
                 if (!input_buffer.empty()) {
                     input_buffer.pop_back();
                     cout << '\r' << "$ " << input_buffer << ' ';
                     cout << '\r' << "$ " << input_buffer << flush;
                 }
             } else {
+                tab_press_count = 0;
                 input_buffer += c;
                 cout << c << flush;
             }
