@@ -137,6 +137,7 @@ int main() {
 
         vector<string> args;
         string output_file;
+        string error_file;
 
         for (size_t i = 0; i < userinput.size();) {
             if (userinput[i] == ">" || userinput[i] == "1>") {
@@ -144,9 +145,20 @@ int main() {
                     cerr << "Syntax error: no output file provided for redirection." << endl;
                     args.clear();
                     output_file.clear();
+                    error_file.clear();
                     break;
                 }
                 output_file = userinput[i + 1];
+                i += 2;
+            } else if (userinput[i] == "2>") {
+                if (i + 1 >= userinput.size()) {
+                    cerr << "Syntax error: no error file provided for redirection." << endl;
+                    args.clear();
+                    output_file.clear();
+                    error_file.clear();
+                    break;
+                }
+                error_file = userinput[i + 1];
                 i += 2;
             } else {
                 args.push_back(userinput[i]);
@@ -162,8 +174,10 @@ int main() {
             return 0;
         } else if (command == "echo") {
             int saved_stdout = -1;
+            int saved_stderr = -1;
             bool redirect_failed = false;
 
+            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
@@ -186,9 +200,37 @@ int main() {
                 }
             }
 
+            // Redirect stderr
+            if (!error_file.empty() && !redirect_failed) {
+                saved_stderr = dup(STDERR_FILENO);
+                if (saved_stderr == -1) {
+                    perror("dup stderr");
+                    redirect_failed = true;
+                } else {
+                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd_err == -1) {
+                        perror("open stderr");
+                        redirect_failed = true;
+                    } else {
+                        if (dup2(fd_err, STDERR_FILENO) == -1) {
+                            perror("dup2 stderr");
+                            close(fd_err);
+                            redirect_failed = true;
+                        } else {
+                            close(fd_err);
+                        }
+                    }
+                }
+            }
+
             if (redirect_failed) {
                 if (saved_stdout != -1) {
+                    dup2(saved_stdout, STDOUT_FILENO);
                     close(saved_stdout);
+                }
+                if (saved_stderr != -1) {
+                    dup2(saved_stderr, STDERR_FILENO);
+                    close(saved_stderr);
                 }
                 continue;
             }
@@ -201,34 +243,33 @@ int main() {
             }
             cout << endl;
 
-            if (!output_file.empty()) {
-                if (dup2(saved_stdout, STDOUT_FILENO) == -1) {
-                    perror("dup2 restore");
-                }
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
                 close(saved_stdout);
             }
-        } else if (command == "type") {
-            if (args.size() < 2) {
-                cerr << "type: missing argument" << endl;
-                continue;
+            if (saved_stderr != -1) {
+                dup2(saved_stderr, STDERR_FILENO);
+                close(saved_stderr);
             }
-
+        } else if (command == "type") {
             int saved_stdout = -1;
+            int saved_stderr = -1;
             bool redirect_failed = false;
 
+            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
-                    perror("dup");
+                    perror("dup stdout");
                     redirect_failed = true;
                 } else {
                     int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
                     if (fd == -1) {
-                        perror("open");
+                        perror("open stdout");
                         redirect_failed = true;
                     } else {
                         if (dup2(fd, STDOUT_FILENO) == -1) {
-                            perror("dup2");
+                            perror("dup2 stdout");
                             close(fd);
                             redirect_failed = true;
                         } else {
@@ -238,38 +279,74 @@ int main() {
                 }
             }
 
+            // Redirect stderr
+            if (!error_file.empty() && !redirect_failed) {
+                saved_stderr = dup(STDERR_FILENO);
+                if (saved_stderr == -1) {
+                    perror("dup stderr");
+                    redirect_failed = true;
+                } else {
+                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd_err == -1) {
+                        perror("open stderr");
+                        redirect_failed = true;
+                    } else {
+                        if (dup2(fd_err, STDERR_FILENO) == -1) {
+                            perror("dup2 stderr");
+                            close(fd_err);
+                            redirect_failed = true;
+                        } else {
+                            close(fd_err);
+                        }
+                    }
+                }
+            }
+
             if (redirect_failed) {
                 if (saved_stdout != -1) {
+                    dup2(saved_stdout, STDOUT_FILENO);
                     close(saved_stdout);
+                }
+                if (saved_stderr != -1) {
+                    dup2(saved_stderr, STDERR_FILENO);
+                    close(saved_stderr);
                 }
                 continue;
             }
 
-            commandChecker(args[1]);
+            if (args.size() < 2) {
+                cerr << "type: missing argument" << endl;
+            } else {
+                commandChecker(args[1]);
+            }
 
-            if (!output_file.empty()) {
-                if (dup2(saved_stdout, STDOUT_FILENO) == -1) {
-                    perror("dup2 restore");
-                }
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
                 close(saved_stdout);
+            }
+            if (saved_stderr != -1) {
+                dup2(saved_stderr, STDERR_FILENO);
+                close(saved_stderr);
             }
         } else if (command == "pwd") {
             int saved_stdout = -1;
+            int saved_stderr = -1;
             bool redirect_failed = false;
 
+            // Redirect stdout
             if (!output_file.empty()) {
                 saved_stdout = dup(STDOUT_FILENO);
                 if (saved_stdout == -1) {
-                    perror("dup");
+                    perror("dup stdout");
                     redirect_failed = true;
                 } else {
                     int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
                     if (fd == -1) {
-                        perror("open");
+                        perror("open stdout");
                         redirect_failed = true;
                     } else {
                         if (dup2(fd, STDOUT_FILENO) == -1) {
-                            perror("dup2");
+                            perror("dup2 stdout");
                             close(fd);
                             redirect_failed = true;
                         } else {
@@ -279,22 +356,114 @@ int main() {
                 }
             }
 
+            // Redirect stderr
+            if (!error_file.empty() && !redirect_failed) {
+                saved_stderr = dup(STDERR_FILENO);
+                if (saved_stderr == -1) {
+                    perror("dup stderr");
+                    redirect_failed = true;
+                } else {
+                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd_err == -1) {
+                        perror("open stderr");
+                        redirect_failed = true;
+                    } else {
+                        if (dup2(fd_err, STDERR_FILENO) == -1) {
+                            perror("dup2 stderr");
+                            close(fd_err);
+                            redirect_failed = true;
+                        } else {
+                            close(fd_err);
+                        }
+                    }
+                }
+            }
+
             if (redirect_failed) {
                 if (saved_stdout != -1) {
+                    dup2(saved_stdout, STDOUT_FILENO);
                     close(saved_stdout);
+                }
+                if (saved_stderr != -1) {
+                    dup2(saved_stderr, STDERR_FILENO);
+                    close(saved_stderr);
                 }
                 continue;
             }
 
             currentPathFinder();
 
-            if (!output_file.empty()) {
-                if (dup2(saved_stdout, STDOUT_FILENO) == -1) {
-                    perror("dup2 restore");
-                }
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
                 close(saved_stdout);
             }
+            if (saved_stderr != -1) {
+                dup2(saved_stderr, STDERR_FILENO);
+                close(saved_stderr);
+            }
         } else if (command == "cd") {
+            int saved_stdout = -1;
+            int saved_stderr = -1;
+            bool redirect_failed = false;
+
+            // Redirect stdout (though cd doesn't output to stdout)
+            if (!output_file.empty()) {
+                saved_stdout = dup(STDOUT_FILENO);
+                if (saved_stdout == -1) {
+                    perror("dup stdout");
+                    redirect_failed = true;
+                } else {
+                    int fd = open(output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd == -1) {
+                        perror("open stdout");
+                        redirect_failed = true;
+                    } else {
+                        if (dup2(fd, STDOUT_FILENO) == -1) {
+                            perror("dup2 stdout");
+                            close(fd);
+                            redirect_failed = true;
+                        } else {
+                            close(fd);
+                        }
+                    }
+                }
+            }
+
+            // Redirect stderr
+            if (!error_file.empty() && !redirect_failed) {
+                saved_stderr = dup(STDERR_FILENO);
+                if (saved_stderr == -1) {
+                    perror("dup stderr");
+                    redirect_failed = true;
+                } else {
+                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd_err == -1) {
+                        perror("open stderr");
+                        redirect_failed = true;
+                    } else {
+                        if (dup2(fd_err, STDERR_FILENO) == -1) {
+                            perror("dup2 stderr");
+                            close(fd_err);
+                            redirect_failed = true;
+                        } else {
+                            close(fd_err);
+                        }
+                    }
+                }
+            }
+
+            if (redirect_failed) {
+                if (saved_stdout != -1) {
+                    dup2(saved_stdout, STDOUT_FILENO);
+                    close(saved_stdout);
+                }
+                if (saved_stderr != -1) {
+                    dup2(saved_stderr, STDERR_FILENO);
+                    close(saved_stderr);
+                }
+                continue;
+            }
+
             string target_dir;
             if (args.size() < 2) {
                 target_dir = getenv("HOME");
@@ -309,6 +478,15 @@ int main() {
             filesystem::current_path(target_dir, ec);
             if (ec) {
                 cerr << "cd: " << target_dir << ": " << ec.message() << endl;
+            }
+
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
+                close(saved_stdout);
+            }
+            if (saved_stderr != -1) {
+                dup2(saved_stderr, STDERR_FILENO);
+                close(saved_stderr);
             }
         } else {
             string path_string = getenv("PATH");
@@ -353,6 +531,20 @@ int main() {
                         exit(EXIT_FAILURE);
                     }
                     close(fd);
+                }
+
+                if (!error_file.empty()) {
+                    int fd_err = open(error_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd_err == -1) {
+                        perror("open");
+                        exit(EXIT_FAILURE);
+                    }
+                    if (dup2(fd_err, STDERR_FILENO) == -1) {
+                        perror("dup2");
+                        close(fd_err);
+                        exit(EXIT_FAILURE);
+                    }
+                    close(fd_err);
                 }
 
                 vector<char*> argv;
