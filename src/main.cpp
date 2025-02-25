@@ -197,7 +197,7 @@ int main() {
                                 }
                                 cout << builtin_matches[i];
                             }
-                            cout << '\n' << "$ " << input_buffer << flush;
+                            cout << "\r\n$ " << input_buffer << flush; // Fixed newline
                             tab_press_count = 0;
                         }
                     }
@@ -267,7 +267,7 @@ int main() {
                                 }
                                 cout << external_matches[i];
                             }
-                            cout << '\n' << "$ " << input_buffer << flush;
+                            cout << "\r\n$ " << input_buffer << flush; // Fixed newline
                             tab_press_count = 0;
                         }
                     } else {
