@@ -194,7 +194,7 @@ int main() {
                         if (first_space != string::npos) {
                             new_buffer = completed + " " + input_buffer.substr(first_space + 1);
                         } else {
-                            new_buffer = completed + " ";
+                            new_buffer = completed; // No trailing space when completing command name.
                         }
                         input_buffer = new_buffer;
                         cout << "\r\033[K$ " << input_buffer << flush;
@@ -207,7 +207,7 @@ int main() {
                             if (first_space != string::npos) {
                                 new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
                             } else {
-                                new_buffer = lcp + " ";
+                                new_buffer = lcp; // No trailing space.
                             }
                             input_buffer = new_buffer;
                             cout << "\r\033[K$ " << input_buffer << flush;
@@ -260,7 +260,7 @@ int main() {
                         if (first_space != string::npos) {
                             new_buffer = completed + " " + input_buffer.substr(first_space + 1);
                         } else {
-                            new_buffer = completed + " ";
+                            new_buffer = completed; // No trailing space.
                         }
                         input_buffer = new_buffer;
                         cout << "\r\033[K$ " << input_buffer << flush;
@@ -273,7 +273,7 @@ int main() {
                             if (first_space != string::npos) {
                                 new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
                             } else {
-                                new_buffer = lcp + " ";
+                                new_buffer = lcp; // No trailing space.
                             }
                             input_buffer = new_buffer;
                             cout << "\r\033[K$ " << input_buffer << flush;
