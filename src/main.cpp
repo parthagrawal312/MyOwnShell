@@ -119,7 +119,6 @@ vector<string> split_sentence(string input) {
 }
 
 void commandChecker(string s) {
-    // This function checks for built-in/external commands.
     string path = get_path(s);
     if (path.empty()) {
         cout << s << " not found" << endl;
@@ -148,67 +147,97 @@ int main() {
             } else if (c == '\t') {
                 tab_press_count++;
                 size_t first_space = input_buffer.find(' ');
-                // Only consider the first token (command) for tab completion.
+                // Consider only the first token (command) for tab completion.
                 string current_command = input_buffer.substr(0, first_space);
 
-                // ********* Modified Tab Completion for Executables *********
-                vector<string> external_matches;
-                string path_env = getenv("PATH");
-                vector<string> path_dirs = split_string(path_env, ':');
-
-                for (const auto& dir : path_dirs) {
-                    if (!filesystem::exists(dir) || !filesystem::is_directory(dir)) {
-                        continue;
-                    }
-                    error_code ec;
-                    for (const auto& entry : filesystem::directory_iterator(dir, ec)) {
-                        if (ec) continue;
-                        if (!entry.is_regular_file()) continue;
-                        string filepath = entry.path().string();
-                        if (access(filepath.c_str(), X_OK) != 0) continue;
-                        string filename = entry.path().filename().string();
-                        if (filename.find(current_command) == 0) {
-                            if (find(external_matches.begin(), external_matches.end(), filename) == external_matches.end()) {
-                                external_matches.push_back(filename);
-                            }
-                        }
+                // First check built-in commands.
+                vector<string> builtin_matches;
+                vector<string> builtins = {"echo", "exit", "type", "pwd", "cd"};
+                for (const auto &b : builtins) {
+                    if (b.find(current_command) == 0) {
+                        builtin_matches.push_back(b);
                     }
                 }
-                sort(external_matches.begin(), external_matches.end());
+                sort(builtin_matches.begin(), builtin_matches.end());
 
-                if (external_matches.empty()) {
-                    cout << '\a' << flush;
-                    tab_press_count = 0;
-                } else if (external_matches.size() == 1) {
-                    // Only one match: autocomplete the command.
-                    string completed = external_matches[0];
-                    string new_buffer;
-                    if (first_space != string::npos) {
-                        new_buffer = completed + " " + input_buffer.substr(first_space + 1);
-                    } else {
-                        new_buffer = completed + " ";
-                    }
-                    input_buffer = new_buffer;
-                    cout << "\r\033[K$ " << input_buffer << flush;
-                    tab_press_count = 0;
-                } else {
-                    // Multiple matches found.
-                    if (tab_press_count == 1) {
-                        cout << '\a' << flush;
-                    } else if (tab_press_count >= 2) {
-                        cout << "\n";
-                        for (size_t i = 0; i < external_matches.size(); ++i) {
-                            if (i > 0) {
-                                cout << "  ";
-                            }
-                            cout << external_matches[i];
+                if (!builtin_matches.empty()) {
+                    if (builtin_matches.size() == 1) {
+                        string completed = builtin_matches[0];
+                        string new_buffer;
+                        if (first_space != string::npos) {
+                            new_buffer = completed + " " + input_buffer.substr(first_space + 1);
+                        } else {
+                            new_buffer = completed + " ";
                         }
-                        // Re-print a fresh prompt with the original input.
-                        cout << "\n$ " << input_buffer << flush;
+                        input_buffer = new_buffer;
+                        cout << "\r\033[K$ " << input_buffer << flush;
                         tab_press_count = 0;
+                    } else {
+                        if (tab_press_count == 1) {
+                            cout << '\a' << flush;
+                        } else if (tab_press_count >= 2) {
+                            cout << "\n";
+                            for (size_t i = 0; i < builtin_matches.size(); ++i) {
+                                if (i > 0) cout << "  ";
+                                cout << builtin_matches[i];
+                            }
+                            cout << "\n$ " << input_buffer << flush;
+                            tab_press_count = 0;
+                        }
+                    }
+                } else {
+                    // If no built-ins match, check for external executables.
+                    vector<string> external_matches;
+                    string path_env = getenv("PATH");
+                    vector<string> path_dirs = split_string(path_env, ':');
+
+                    for (const auto &dir : path_dirs) {
+                        if (!filesystem::exists(dir) || !filesystem::is_directory(dir)) {
+                            continue;
+                        }
+                        error_code ec;
+                        for (const auto &entry : filesystem::directory_iterator(dir, ec)) {
+                            if (ec) continue;
+                            if (!entry.is_regular_file()) continue;
+                            string filepath = entry.path().string();
+                            if (access(filepath.c_str(), X_OK) != 0) continue;
+                            string filename = entry.path().filename().string();
+                            if (filename.find(current_command) == 0) {
+                                if (find(external_matches.begin(), external_matches.end(), filename) == external_matches.end())
+                                    external_matches.push_back(filename);
+                            }
+                        }
+                    }
+                    sort(external_matches.begin(), external_matches.end());
+
+                    if (external_matches.empty()) {
+                        cout << '\a' << flush;
+                        tab_press_count = 0;
+                    } else if (external_matches.size() == 1) {
+                        string completed = external_matches[0];
+                        string new_buffer;
+                        if (first_space != string::npos) {
+                            new_buffer = completed + " " + input_buffer.substr(first_space + 1);
+                        } else {
+                            new_buffer = completed + " ";
+                        }
+                        input_buffer = new_buffer;
+                        cout << "\r\033[K$ " << input_buffer << flush;
+                        tab_press_count = 0;
+                    } else {
+                        if (tab_press_count == 1) {
+                            cout << '\a' << flush;
+                        } else if (tab_press_count >= 2) {
+                            cout << "\n";
+                            for (size_t i = 0; i < external_matches.size(); ++i) {
+                                if (i > 0) cout << "  ";
+                                cout << external_matches[i];
+                            }
+                            cout << "\n$ " << input_buffer << flush;
+                            tab_press_count = 0;
+                        }
                     }
                 }
-                // ********* End Modified Tab Completion *********
             } else if (c == 127) { // Backspace
                 tab_press_count = 0;
                 if (!input_buffer.empty()) {
@@ -308,11 +337,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags = O_WRONLY | O_CREAT;
-                    if (output_append) {
+                    if (output_append)
                         flags |= O_APPEND;
-                    } else {
+                    else
                         flags |= O_TRUNC;
-                    }
                     int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open");
@@ -336,11 +364,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags_err = O_WRONLY | O_CREAT;
-                    if (error_append) {
+                    if (error_append)
                         flags_err |= O_APPEND;
-                    } else {
+                    else
                         flags_err |= O_TRUNC;
-                    }
                     int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
@@ -397,11 +424,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags = O_WRONLY | O_CREAT;
-                    if (output_append) {
+                    if (output_append)
                         flags |= O_APPEND;
-                    } else {
+                    else
                         flags |= O_TRUNC;
-                    }
                     int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
@@ -425,11 +451,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags_err = O_WRONLY | O_CREAT;
-                    if (error_append) {
+                    if (error_append)
                         flags_err |= O_APPEND;
-                    } else {
+                    else
                         flags_err |= O_TRUNC;
-                    }
                     int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
@@ -484,11 +509,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags = O_WRONLY | O_CREAT;
-                    if (output_append) {
+                    if (output_append)
                         flags |= O_APPEND;
-                    } else {
+                    else
                         flags |= O_TRUNC;
-                    }
                     int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
@@ -512,11 +536,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags_err = O_WRONLY | O_CREAT;
-                    if (error_append) {
+                    if (error_append)
                         flags_err |= O_APPEND;
-                    } else {
+                    else
                         flags_err |= O_TRUNC;
-                    }
                     int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
@@ -567,11 +590,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags = O_WRONLY | O_CREAT;
-                    if (output_append) {
+                    if (output_append)
                         flags |= O_APPEND;
-                    } else {
+                    else
                         flags |= O_TRUNC;
-                    }
                     int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open stdout");
@@ -595,11 +617,10 @@ int main() {
                     redirect_failed = true;
                 } else {
                     int flags_err = O_WRONLY | O_CREAT;
-                    if (error_append) {
+                    if (error_append)
                         flags_err |= O_APPEND;
-                    } else {
+                    else
                         flags_err |= O_TRUNC;
-                    }
                     int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open stderr");
@@ -653,7 +674,7 @@ int main() {
                 close(saved_stderr);
             }
         } else {
-            // External command execution
+            // External command execution.
             string path_string = getenv("PATH");
             vector<string> path = split_string(path_string, ':');
             string filepath;
@@ -665,7 +686,7 @@ int main() {
                     found = true;
                 }
             } else {
-                for (const auto& dir : path) {
+                for (const auto &dir : path) {
                     filepath = dir + "/" + command;
                     if (filesystem::exists(filepath) && filesystem::is_regular_file(filepath)) {
                         found = true;
@@ -686,11 +707,10 @@ int main() {
             } else if (pid == 0) {
                 if (!output_file.empty()) {
                     int flags = O_WRONLY | O_CREAT;
-                    if (output_append) {
+                    if (output_append)
                         flags |= O_APPEND;
-                    } else {
+                    else
                         flags |= O_TRUNC;
-                    }
                     int fd = open(output_file.c_str(), flags, 0644);
                     if (fd == -1) {
                         perror("open");
@@ -706,11 +726,10 @@ int main() {
 
                 if (!error_file.empty()) {
                     int flags_err = O_WRONLY | O_CREAT;
-                    if (error_append) {
+                    if (error_append)
                         flags_err |= O_APPEND;
-                    } else {
+                    else
                         flags_err |= O_TRUNC;
-                    }
                     int fd_err = open(error_file.c_str(), flags_err, 0644);
                     if (fd_err == -1) {
                         perror("open");
@@ -725,7 +744,7 @@ int main() {
                 }
 
                 vector<char*> argv;
-                for (auto& arg : args) {
+                for (auto &arg : args) {
                     argv.push_back(const_cast<char*>(arg.c_str()));
                 }
                 argv.push_back(nullptr);
