@@ -118,6 +118,21 @@ vector<string> split_sentence(string input) {
   return userinput;
 }
 
+string longest_common_prefix(const vector<string>& strs) {
+    if (strs.empty()) return "";
+    string prefix = strs[0];
+    for (size_t i = 1; i < strs.size(); i++) {
+        size_t j = 0;
+        while (j < prefix.size() && j < strs[i].size() && prefix[j] == strs[i][j]) {
+            j++;
+        }
+        prefix = prefix.substr(0, j);
+        if (prefix.empty())
+            break;
+    }
+    return prefix;
+}
+
 void commandChecker(string s) {
   vector<string> builtInCommand = {"exit", "echo", "type", "pwd", "cd"};
   int flag = 0;
@@ -185,16 +200,30 @@ int main() {
                         cout << "\r\033[K$ " << input_buffer << flush;
                         tab_press_count = 0;
                     } else {
-                        if (tab_press_count == 1) {
-                            cout << '\a' << flush;
-                        } else if (tab_press_count >= 2) {
-                            cout << "\n";
-                            for (size_t i = 0; i < builtin_matches.size(); ++i) {
-                                if (i > 0) cout << "  ";
-                                cout << builtin_matches[i];
+                        // Compute longest common prefix for multiple built-in matches.
+                        string lcp = longest_common_prefix(builtin_matches);
+                        if (lcp.length() > current_command.length()) {
+                            string new_buffer;
+                            if (first_space != string::npos) {
+                                new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
+                            } else {
+                                new_buffer = lcp + " ";
                             }
-                            cout << "\n$ " << input_buffer << flush;
+                            input_buffer = new_buffer;
+                            cout << "\r\033[K$ " << input_buffer << flush;
                             tab_press_count = 0;
+                        } else {
+                            if (tab_press_count == 1) {
+                                cout << '\a' << flush;
+                            } else if (tab_press_count >= 2) {
+                                cout << "\n";
+                                for (size_t i = 0; i < builtin_matches.size(); ++i) {
+                                    if (i > 0) cout << "  ";
+                                    cout << builtin_matches[i];
+                                }
+                                cout << "\n$ " << input_buffer << flush;
+                                tab_press_count = 0;
+                            }
                         }
                     }
                 } else {
@@ -237,16 +266,30 @@ int main() {
                         cout << "\r\033[K$ " << input_buffer << flush;
                         tab_press_count = 0;
                     } else {
-                        if (tab_press_count == 1) {
-                            cout << '\a' << flush;
-                        } else if (tab_press_count >= 2) {
-                            cout << "\n";
-                            for (size_t i = 0; i < external_matches.size(); ++i) {
-                                if (i > 0) cout << "  ";
-                                cout << external_matches[i];
+                        // Compute longest common prefix for external matches.
+                        string lcp = longest_common_prefix(external_matches);
+                        if (lcp.length() > current_command.length()) {
+                            string new_buffer;
+                            if (first_space != string::npos) {
+                                new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
+                            } else {
+                                new_buffer = lcp + " ";
                             }
-                            cout << "\n$ " << input_buffer << flush;
+                            input_buffer = new_buffer;
+                            cout << "\r\033[K$ " << input_buffer << flush;
                             tab_press_count = 0;
+                        } else {
+                            if (tab_press_count == 1) {
+                                cout << '\a' << flush;
+                            } else if (tab_press_count >= 2) {
+                                cout << "\n";
+                                for (size_t i = 0; i < external_matches.size(); ++i) {
+                                    if (i > 0) cout << "  ";
+                                    cout << external_matches[i];
+                                }
+                                cout << "\n$ " << input_buffer << flush;
+                                tab_press_count = 0;
+                            }
                         }
                     }
                 }
