@@ -194,7 +194,8 @@ int main() {
                         if (first_space != string::npos) {
                             new_buffer = completed + " " + input_buffer.substr(first_space + 1);
                         } else {
-                            new_buffer = completed; // No trailing space when completing command name.
+                            // Unique match: append trailing space.
+                            new_buffer = completed + " ";
                         }
                         input_buffer = new_buffer;
                         cout << "\r\033[K$ " << input_buffer << flush;
@@ -207,7 +208,7 @@ int main() {
                             if (first_space != string::npos) {
                                 new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
                             } else {
-                                new_buffer = lcp; // No trailing space.
+                                new_buffer = lcp;
                             }
                             input_buffer = new_buffer;
                             cout << "\r\033[K$ " << input_buffer << flush;
@@ -260,7 +261,8 @@ int main() {
                         if (first_space != string::npos) {
                             new_buffer = completed + " " + input_buffer.substr(first_space + 1);
                         } else {
-                            new_buffer = completed; // No trailing space.
+                            // Unique match: append trailing space.
+                            new_buffer = completed + " ";
                         }
                         input_buffer = new_buffer;
                         cout << "\r\033[K$ " << input_buffer << flush;
@@ -273,7 +275,7 @@ int main() {
                             if (first_space != string::npos) {
                                 new_buffer = lcp + " " + input_buffer.substr(first_space + 1);
                             } else {
-                                new_buffer = lcp; // No trailing space.
+                                new_buffer = lcp;
                             }
                             input_buffer = new_buffer;
                             cout << "\r\033[K$ " << input_buffer << flush;
