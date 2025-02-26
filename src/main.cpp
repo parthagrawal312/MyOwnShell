@@ -119,12 +119,24 @@ vector<string> split_sentence(string input) {
 }
 
 void commandChecker(string s) {
-    string path = get_path(s);
-    if (path.empty()) {
-        cout << s << " not found" << endl;
-    } else {
-        cout << s << " is " << path << endl;
-    }
+  vector<string> builtInCommand = {"exit", "echo", "type", "pwd", "cd"};
+  int flag = 0;
+  for (size_t i = 0; i < builtInCommand.size(); i++) {
+      if (s == builtInCommand[i]) {
+          flag = 1;
+          break;
+      }
+  }
+  if (flag == 1) {
+      cout << s << " is a shell builtin" << endl;
+  } else {
+      string path = get_path(s);
+      if (path.empty()) {
+          cout << s << " not found" << endl;
+      } else {
+          cout << s << " is " << path << endl;
+      }
+  }
 }
 
 int main() {
