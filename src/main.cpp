@@ -119,7 +119,7 @@ vector<string> split_sentence(string input) {
 }
 
 void commandChecker(string s) {
-    // This function is kept for non-executable commands.
+    // This function checks for built-in/external commands.
     string path = get_path(s);
     if (path.empty()) {
         cout << s << " not found" << endl;
@@ -168,7 +168,6 @@ int main() {
                         if (access(filepath.c_str(), X_OK) != 0) continue;
                         string filename = entry.path().filename().string();
                         if (filename.find(current_command) == 0) {
-                            // Avoid duplicate names from different PATH entries.
                             if (find(external_matches.begin(), external_matches.end(), filename) == external_matches.end()) {
                                 external_matches.push_back(filename);
                             }
@@ -190,20 +189,22 @@ int main() {
                         new_buffer = completed + " ";
                     }
                     input_buffer = new_buffer;
-                    cout << "\r$ " << input_buffer << flush;
+                    cout << "\r\033[K$ " << input_buffer << flush;
                     tab_press_count = 0;
                 } else {
                     // Multiple matches found.
                     if (tab_press_count == 1) {
                         cout << '\a' << flush;
                     } else if (tab_press_count >= 2) {
+                        cout << "\n";
                         for (size_t i = 0; i < external_matches.size(); ++i) {
                             if (i > 0) {
                                 cout << "  ";
                             }
                             cout << external_matches[i];
                         }
-                        cout << "\r\n$ " << input_buffer << flush;
+                        // Re-print a fresh prompt with the original input.
+                        cout << "\n$ " << input_buffer << flush;
                         tab_press_count = 0;
                     }
                 }
@@ -212,8 +213,7 @@ int main() {
                 tab_press_count = 0;
                 if (!input_buffer.empty()) {
                     input_buffer.pop_back();
-                    cout << '\r' << "$ " << input_buffer << ' ';
-                    cout << '\r' << "$ " << input_buffer << flush;
+                    cout << "\r\033[K$ " << input_buffer << flush;
                 }
             } else {
                 tab_press_count = 0;
