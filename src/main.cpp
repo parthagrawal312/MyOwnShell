@@ -178,7 +178,8 @@ int main() {
                         } else if (tab_press_count >= 2) {
                             cout << "\n";
                             for (size_t i = 0; i < builtin_matches.size(); ++i) {
-                                if (i > 0) cout << "  ";
+                                if (i > 0)
+                                    cout << "  ";
                                 cout << builtin_matches[i];
                             }
                             cout << "\n$ " << input_buffer << flush;
@@ -192,9 +193,8 @@ int main() {
                     vector<string> path_dirs = split_string(path_env, ':');
 
                     for (const auto &dir : path_dirs) {
-                        if (!filesystem::exists(dir) || !filesystem::is_directory(dir)) {
+                        if (!filesystem::exists(dir) || !filesystem::is_directory(dir))
                             continue;
-                        }
                         error_code ec;
                         for (const auto &entry : filesystem::directory_iterator(dir, ec)) {
                             if (ec) continue;
@@ -230,7 +230,8 @@ int main() {
                         } else if (tab_press_count >= 2) {
                             cout << "\n";
                             for (size_t i = 0; i < external_matches.size(); ++i) {
-                                if (i > 0) cout << "  ";
+                                if (i > 0)
+                                    cout << "  ";
                                 cout << external_matches[i];
                             }
                             cout << "\n$ " << input_buffer << flush;
@@ -251,78 +252,80 @@ int main() {
             }
         }
 
-        vector<string> userinput = split_sentence(input_buffer);
-        if (userinput.empty()) continue;
+        vector<string> args = split_sentence(input_buffer);
+        if (args.empty()) continue;
 
-        vector<string> args;
+        vector<string> exec_args;
         string output_file;
         string error_file;
         bool output_append = false;
         bool error_append = false;
 
-        for (size_t i = 0; i < userinput.size();) {
-            if (userinput[i] == ">" || userinput[i] == "1>") {
-                if (i + 1 >= userinput.size()) {
+        // Process redirection tokens.
+        for (size_t i = 0; i < args.size();) {
+            if (args[i] == ">" || args[i] == "1>") {
+                if (i + 1 >= args.size()) {
                     cerr << "Syntax error: no output file provided for redirection." << endl;
-                    args.clear();
+                    exec_args.clear();
                     output_file.clear();
                     error_file.clear();
                     output_append = false;
                     error_append = false;
                     break;
                 }
-                output_file = userinput[i + 1];
+                output_file = args[i + 1];
                 output_append = false;
                 i += 2;
-            } else if (userinput[i] == ">>" || userinput[i] == "1>>") {
-                if (i + 1 >= userinput.size()) {
+            } else if (args[i] == ">>" || args[i] == "1>>") {
+                if (i + 1 >= args.size()) {
                     cerr << "Syntax error: no output file provided for redirection." << endl;
-                    args.clear();
+                    exec_args.clear();
                     output_file.clear();
                     error_file.clear();
                     output_append = false;
                     error_append = false;
                     break;
                 }
-                output_file = userinput[i + 1];
+                output_file = args[i + 1];
                 output_append = true;
                 i += 2;
-            } else if (userinput[i] == "2>") {
-                if (i + 1 >= userinput.size()) {
+            } else if (args[i] == "2>") {
+                if (i + 1 >= args.size()) {
                     cerr << "Syntax error: no error file provided for redirection." << endl;
-                    args.clear();
+                    exec_args.clear();
                     output_file.clear();
                     error_file.clear();
                     output_append = false;
                     error_append = false;
                     break;
                 }
-                error_file = userinput[i + 1];
+                error_file = args[i + 1];
                 error_append = false;
                 i += 2;
-            } else if (userinput[i] == "2>>") {
-                if (i + 1 >= userinput.size()) {
+            } else if (args[i] == "2>>") {
+                if (i + 1 >= args.size()) {
                     cerr << "Syntax error: no error file provided for redirection." << endl;
-                    args.clear();
+                    exec_args.clear();
                     output_file.clear();
                     error_file.clear();
                     output_append = false;
                     error_append = false;
                     break;
                 }
-                error_file = userinput[i + 1];
+                error_file = args[i + 1];
                 error_append = true;
                 i += 2;
             } else {
-                args.push_back(userinput[i]);
+                exec_args.push_back(args[i]);
                 i++;
             }
         }
 
-        if (args.empty()) continue;
+        if (exec_args.empty()) continue;
 
-        string command = args[0];
+        string command = exec_args[0];
 
+        // Built-in commands.
         if (command == "exit") {
             return 0;
         } else if (command == "echo") {
@@ -396,10 +399,10 @@ int main() {
                 continue;
             }
 
-            if (args.size() > 1) {
-                cout << args[1];
-                for (size_t i = 2; i < args.size(); i++) {
-                    cout << " " << args[i];
+            if (exec_args.size() > 1) {
+                cout << exec_args[1];
+                for (size_t i = 2; i < exec_args.size(); i++) {
+                    cout << " " << exec_args[i];
                 }
             }
             cout << endl;
@@ -483,10 +486,10 @@ int main() {
                 continue;
             }
 
-            if (args.size() < 2) {
+            if (exec_args.size() < 2) {
                 cerr << "type: missing argument" << endl;
             } else {
-                commandChecker(args[1]);
+                commandChecker(exec_args[1]);
             }
 
             if (saved_stdout != -1) {
@@ -650,10 +653,10 @@ int main() {
             }
 
             string target_dir;
-            if (args.size() < 2) {
+            if (exec_args.size() < 2) {
                 target_dir = getenv("HOME");
             } else {
-                target_dir = args[1];
+                target_dir = exec_args[1];
                 if (target_dir == "~") {
                     target_dir = getenv("HOME");
                 }
@@ -674,7 +677,8 @@ int main() {
                 close(saved_stderr);
             }
         } else {
-            // External command execution.
+            // **************** Modified External Command Execution ****************
+            // First, try to locate the command as given.
             string path_string = getenv("PATH");
             vector<string> path = split_string(path_string, ':');
             string filepath;
@@ -694,11 +698,38 @@ int main() {
                     }
                 }
             }
-
+            // If not found and there is at least one more token, try swapping.
+            if (!found && exec_args.size() >= 2) {
+                string alt_command = exec_args[1];
+                if (alt_command.find('/') != string::npos && filesystem::exists(alt_command) && filesystem::is_regular_file(alt_command)) {
+                    // Swap: use the second token as the command.
+                    vector<string> new_args;
+                    new_args.push_back(alt_command);  // new command (argv[0])
+                    new_args.push_back(exec_args[0]);   // first token becomes first argument
+                    for (size_t i = 2; i < exec_args.size(); i++) {
+                        new_args.push_back(exec_args[i]);
+                    }
+                    exec_args = new_args;
+                    command = exec_args[0];
+                    if (command.find('/') != string::npos) {
+                        if (filesystem::exists(command) && filesystem::is_regular_file(command))
+                            found = true;
+                    } else {
+                        for (const auto &dir : path) {
+                            filepath = dir + "/" + command;
+                            if (filesystem::exists(filepath) && filesystem::is_regular_file(filepath)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             if (!found) {
                 cout << command << ": not found" << endl;
                 continue;
             }
+            // **************** End Modification ****************
 
             pid_t pid = fork();
             if (pid == -1) {
@@ -744,7 +775,7 @@ int main() {
                 }
 
                 vector<char*> argv;
-                for (auto &arg : args) {
+                for (auto &arg : exec_args) {
                     argv.push_back(const_cast<char*>(arg.c_str()));
                 }
                 argv.push_back(nullptr);
